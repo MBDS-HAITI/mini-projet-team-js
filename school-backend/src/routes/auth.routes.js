@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { z } = require("zod");
 const User = require("../models/User");
-const auth = require("../middleware/auth");
+
 const router = express.Router();
 
 router.post("/login", async (req, res, next) => {
@@ -15,7 +15,7 @@ router.post("/login", async (req, res, next) => {
 
     const { email, password } = schema.parse(req.body);
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const user = await User.findOne({ email: email.toLowerCase() }).populate("studentId");
     if (!user) return res.status(401).json({ message: "Identifiants invalides" });
 
     const ok = await bcrypt.compare(password, user.passwordHash);
@@ -25,7 +25,7 @@ router.post("/login", async (req, res, next) => {
       sub: user._id.toString(),
       email: user.email,
       role: user.role,
-      studentId: user.studentId ? user.studentId.toString() : null
+      studentId: user.studentId ? (user.studentId._id?.toString?.() || user.studentId.toString()) : null
     };
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
@@ -37,13 +37,5 @@ router.post("/login", async (req, res, next) => {
     next(e);
   }
 });
-
-const auth = require("../middleware/auth");
-
-router.get("/me", auth, async (req, res) => {
-  // req.user = payload JWT
-  res.json({ user: req.user });
-});
-
 
 module.exports = router;

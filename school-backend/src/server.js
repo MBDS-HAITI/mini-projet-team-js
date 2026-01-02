@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
 const { connectDb } = require("./config/db");
+const passport = require("passport");
 
 const authRoutes = require("./routes/auth.routes");
 const oauthRoutes = require("./routes/oauth.routes");
@@ -13,6 +14,7 @@ const gradesRoutes = require("./routes/grades.routes");
 const usersRoutes = require("./routes/users.routes");
 const dashboardRoutes = require("./routes/dashboard.routes");
 
+require("./config/passport");
 require("./config/passport");
 
 const app = express();
@@ -36,6 +38,8 @@ app.use("/api/enrollments", enrollmentsRoutes);
 app.use("/api/grades", gradesRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+
+app.use(passport.initialize());
 
 // ✅ gestion erreurs propre
 app.use((err, req, res, next) => {
