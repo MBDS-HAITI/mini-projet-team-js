@@ -6,6 +6,9 @@ services:
     volumes:
       - ./school-backend:/app
       - /app/node_modules # Prevent overwriting node_modules
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/school_db
+      - PORT=7010
     env_file:
       - ./school-backend/.env
     ports:
