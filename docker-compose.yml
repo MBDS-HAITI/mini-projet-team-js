@@ -1,0 +1,36 @@
+services:
+  school-backend:
+    build:
+      context: ./school-backend
+    container_name: school-backend
+    volumes:
+      - ./school-backend:/app
+      - /app/node_modules # Prevent overwriting node_modules
+    env_file:
+      - ./school-backend/.env
+    ports:
+      - "7010:7010"
+    depends_on:
+      - mongo
+  school-front:
+    build:
+      context: ./school-front
+    container_name: school-front
+    volumes:
+      - ./school-front:/app
+      - /app/node_modules # Prevent overwriting node_modules
+    env_file:
+      - ./school-front/.env
+    ports:
+      - "5173:5173"
+    depends_on:
+      - school-backend
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+volumes:
+  mongo-data:
