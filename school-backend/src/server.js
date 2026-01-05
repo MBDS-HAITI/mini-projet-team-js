@@ -5,6 +5,9 @@ const session = require("express-session");
 const { connectDb } = require("./config/db");
 const passport = require("passport");
 
+
+require("./config/passport");
+
 const authRoutes = require("./routes/auth.routes");
 const oauthRoutes = require("./routes/oauth.routes");
 const studentsRoutes = require("./routes/students.routes");
@@ -14,8 +17,6 @@ const gradesRoutes = require("./routes/grades.routes");
 const usersRoutes = require("./routes/users.routes");
 const dashboardRoutes = require("./routes/dashboard.routes");
 
-require("./config/passport");
-require("./config/passport");
 
 const app = express();
 
@@ -28,6 +29,9 @@ app.use(session({
   saveUninitialized: false
 }));
 
+
+app.use(passport.initialize());
+
 app.get("/health", (req, res) => res.json({ ok: true }));
 
 app.use("/api/auth", authRoutes);
@@ -39,7 +43,6 @@ app.use("/api/grades", gradesRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
-app.use(passport.initialize());
 
 // ✅ gestion erreurs propre
 app.use((err, req, res, next) => {
