@@ -9,16 +9,13 @@ const Student = require("../models/Student");
 async function upsertOAuthUser({ provider, oauthId, email, name, avatar }) {
   const emailLower = (email || "").toLowerCase();
 
-  // 1) si user existe par oauthProvider+oauthId
   let user = await User.findOne({ oauthProvider: provider, oauthId });
 
-  // 2) sinon si user existe par email → on lie le provider
   if (!user && emailLower) {
     user = await User.findOne({ email: emailLower });
   }
 
   if (!user) {
-    // ✅ par défaut : STUDENT
     user = await User.create({
       email: emailLower || `${provider}_${oauthId}@no-email.local`,
       role: "STUDENT",
@@ -26,10 +23,9 @@ async function upsertOAuthUser({ provider, oauthId, email, name, avatar }) {
       oauthId,
       name: name || "",
       avatar: avatar || "",
-      passwordHash: "" // OAuth
+      passwordHash: ""
     });
   } else {
-    // update lien OAuth si manquant
     user.oauthProvider = user.oauthProvider || provider;
     user.oauthId = user.oauthId || oauthId;
     user.name = user.name || name || "";
@@ -37,7 +33,6 @@ async function upsertOAuthUser({ provider, oauthId, email, name, avatar }) {
     await user.save();
   }
 
-  // ✅ si c'est un STUDENT et studentId absent, tente de lier via email
   if (user.role === "STUDENT" && !user.studentId && emailLower) {
     const s = await Student.findOne({ email: emailLower });
     if (s) {
@@ -49,38 +44,42 @@ async function upsertOAuthUser({ provider, oauthId, email, name, avatar }) {
   return user;
 }
 
-// ---- Google
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.GOOGLE_CALLBACK_URL
+// ✅ Google
+const googleStrategy = new GoogleStrategy(
+  {
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_CALLBACK_URL
+  },
+  async (accessToken, refreshToken, profile, done) => {
+    try {
+      const email = profile.emails?.[0]?.value;
+      const name = profile.displayName;
+      const avatar = profile.photos?.[0]?.value;
 
-    },
-    async (accessToken, refreshToken, profile, done) => {
-      try {
-        const email = profile.emails?.[0]?.value;
-        const name = profile.displayName;
-        const avatar = profile.photos?.[0]?.value;
+      const user = await upsertOAuthUser({
+        provider: "google",
+        oauthId: profile.id,
+        email,
+        name,
+        avatar
+      });
 
-        const user = await upsertOAuthUser({
-          provider: "google",
-          oauthId: profile.id,
-          email,
-          name,
-          avatar
-        });
-
-        done(null, user);
-      } catch (e) {
-        done(e);
-      }
+      done(null, user);
+    } catch (e) {
+      done(e);
     }
-  )
+  }
 );
 
-// ---- GitHub
+// ✅ FORCE toujours le sélecteur de compte (même si route oublie prompt)
+googleStrategy.authorizationParams = () => ({
+  prompt: "select_account"
+});
+
+passport.use(googleStrategy);
+
+// GitHub (tu complèteras tes env)
 passport.use(
   new GithubStrategy(
     {
@@ -91,7 +90,6 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        // GitHub ne donne pas toujours l'email => on prend le premier disponible
         const email =
           profile.emails?.find((e) => e.verified)?.value ||
           profile.emails?.[0]?.value ||
@@ -116,7 +114,7 @@ passport.use(
   )
 );
 
-// ---- LinkedIn
+// LinkedIn (tu complèteras tes env)
 passport.use(
   new LinkedInStrategy(
     {
