@@ -38,4 +38,33 @@ router.post("/login", async (req, res, next) => {
   }
 });
 
+router.get("/me", async (req, res) => {
+  const header = req.headers.authorization || "";
+  const token = header.startsWith("Bearer ") ? header.slice(7) : null;
+
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+
+    // (optionnel) récupérer user DB si tu veux plus d’infos
+    const user = await User.findById(payload.sub).populate("studentId");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // renvoyer un objet user propre (comme login)
+    const out = {
+      sub: user._id.toString(),
+      email: user.email,
+      role: user.role,
+      studentId: user.studentId ? (user.studentId._id?.toString?.() || user.studentId.toString()) : null
+    };
+
+    return res.json({ user: out });
+  } catch (e) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+});
+
+
+
 module.exports = router;
