@@ -1,6 +1,6 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const passport = require("passport"); // ✅ IMPORTANT (pas ../config/passport)
+const passport = require("passport"); 
 
 const router = express.Router();
 
@@ -22,14 +22,14 @@ function redirectWithToken(res, token) {
   return res.redirect(url);
 }
 
-// ✅ Google (force choix + reauth)
+// 
 router.get(
   "/google",
   passport.authenticate("google", {
     session: false,
     scope: ["profile", "email"],
     prompt: "select_account",
-    authType: "reauthenticate" // ✅ attention: authType (pas authtyper)
+    authType: "reauthenticate" 
   })
 );
 
@@ -43,6 +43,40 @@ router.get(
     const token = signToken(req.user);
     redirectWithToken(res, token);
   }
+);
+
+// ---- GitHub
+function failRedirect() {
+  return `${process.env.FRONTEND_URL}/login?oauth=fail`;
+}
+
+router.get("/github", passport.authenticate("github", { session: false }));
+router.get(
+  "/github/callback",
+  passport.authenticate("github", { session: false, failureRedirect: failRedirect() }),
+  (req, res) => redirectWithToken(res, signToken(req.user))
+);
+
+// ---- LinkedIn
+router.get("/linkedin", passport.authenticate("linkedin", { session: false }));
+router.get(
+  "/linkedin/callback",
+  passport.authenticate("linkedin", { session: false, failureRedirect: failRedirect() }),
+  (req, res) => redirectWithToken(res, signToken(req.user))
+);
+
+// ---- Facebook
+router.get(
+  "/facebook",
+  passport.authenticate("facebook", {
+    session: false,
+    scope: ["email"] 
+  })
+);
+router.get(
+  "/facebook/callback",
+  passport.authenticate("facebook", { session: false, failureRedirect: failRedirect() }),
+  (req, res) => redirectWithToken(res, signToken(req.user))
 );
 
 module.exports = router;
