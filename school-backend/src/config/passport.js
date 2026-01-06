@@ -2,6 +2,7 @@ const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const GithubStrategy = require("passport-github2").Strategy;
 const LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
+const FacebookStrategy = require("passport-facebook").Strategy;
 
 const User = require("../models/User");
 const Student = require("../models/Student");
@@ -79,21 +80,38 @@ googleStrategy.authorizationParams = () => ({
 
 passport.use(googleStrategy);
 
-// GitHub (tu complèteras tes env)
+const axios = require("axios");
+
+// ---------------- GitHub ----------------
 passport.use(
   new GithubStrategy(
     {
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      callbackURL: `${process.env.BACKEND_URL}/api/oauth/github/callback`,
+      callbackURL: process.env.GITHUB_CALLBACK_URL,
       scope: ["user:email"]
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        const email =
+        let email =
           profile.emails?.find((e) => e.verified)?.value ||
           profile.emails?.[0]?.value ||
           null;
+
+        // ✅ fallback: fetch emails from GitHub API
+        if (!email) {
+          const { data } = await axios.get("https://api.github.com/user/emails", {
+            headers: { Authorization: `token ${accessToken}`, "User-Agent": "school-app" }
+          });
+
+          // pick primary verified if possible
+          const best =
+            data.find((e) => e.primary && e.verified) ||
+            data.find((e) => e.verified) ||
+            data[0];
+
+          email = best?.email || null;
+        }
 
         const name = profile.displayName || profile.username;
         const avatar = profile.photos?.[0]?.value;
@@ -114,13 +132,13 @@ passport.use(
   )
 );
 
-// LinkedIn (tu complèteras tes env)
+// ---------------- LinkedIn ----------------
 passport.use(
   new LinkedInStrategy(
     {
       clientID: process.env.LINKEDIN_CLIENT_ID,
       clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
-      callbackURL: `${process.env.BACKEND_URL}/api/oauth/linkedin/callback`,
+      callbackURL: process.env.LINKEDIN_CALLBACK_URL,
       scope: ["r_liteprofile", "r_emailaddress"],
       state: true
     },
@@ -132,6 +150,37 @@ passport.use(
 
         const user = await upsertOAuthUser({
           provider: "linkedin",
+          oauthId: profile.id,
+          email,
+          name,
+          avatar
+        });
+
+        done(null, user);
+      } catch (e) {
+        done(e);
+      }
+    }
+  )
+);
+
+// ---------------- Facebook ----------------
+passport.use(
+  new FacebookStrategy(
+    {
+      clientID: process.env.FACEBOOK_CLIENT_ID,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+      callbackURL: process.env.FACEBOOK_CALLBACK_URL,
+      profileFields: ["id", "displayName", "photos", "email"]
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        const email = profile.emails?.[0]?.value || null;
+        const name = profile.displayName;
+        const avatar = profile.photos?.[0]?.value;
+
+        const user = await upsertOAuthUser({
+          provider: "facebook",
           oauthId: profile.id,
           email,
           name,

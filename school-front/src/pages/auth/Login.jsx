@@ -57,6 +57,10 @@ export default function Login() {
 <Button fullWidth variant="outlined" sx={{ mt: 1 }} onClick={() => sso("linkedin")}>
   Continuer avec LinkedIn
 </Button>
+<Button fullWidth variant="outlined" sx={{ mt: 1 }} onClick={() => sso("facebook")}>
+  Continuer avec Facebook
+</Button>
+
 
         </form>
 
