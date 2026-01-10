@@ -19,6 +19,7 @@ import CoursesList from "./pages/courses/CoursesList";
 import CourseDetails from "./pages/courses/CourseDetails";
 import PrintCoursesList from "./pages/print/PrintCoursesList";
 import PrintCourseDetails from "./pages/print/PrintCourseDetails";
+import PrintStudentBulletin from "./pages/print/PrintStudentBulletin";
 
 import GradesList from "./pages/grades/GradesList";
 import GradeDetails from "./pages/grades/GradeDetails";
@@ -31,11 +32,14 @@ import PrintEnrollmentsList from "./pages/print/PrintEnrollmentsList";
 import PrintEnrollmentDetails from "./pages/print/PrintEnrollmentDetails";
 
 import UsersList from "./pages/users/UsersList";
-import UserDetails from "./pages/users/UserDetails";
+import UserView from "./pages/users/UserView";
+import Profile from "./pages/profile/Profile";
 import PrintUsersList from "./pages/print/PrintUsersList";
 import PrintUserDetails from "./pages/print/PrintUserDetails";
 
 import OAuthCallback from "./pages/auth/OAuthCallback";
+import LinkStudentAccount from "./pages/students/LinkStudentAccount";
+
 
 
 
@@ -69,6 +73,17 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+    <Route
+  path="/student/link"
+  element={
+    <ProtectedRoute roles={["STUDENT"]}>
+      <LinkStudentAccount />
+    </ProtectedRoute>
+  }
+/>
+
+    <Route path="/print/bulletin" element={<PrintStudentBulletin />} />
+
 
         {/* ========================= */}
         {/* APP ROUTES (AVEC APPSHELL) */}
@@ -80,7 +95,15 @@ export default function App() {
               <Routes>
                 {/* Public */}
                 <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
+               <Route
+  path="/register"
+  element={
+    <ProtectedRoute roles={["ADMIN"]}>
+      <Register />
+    </ProtectedRoute>
+  }
+/>
+
 
                 {/* Home redirect */}
                 <Route
@@ -153,11 +176,13 @@ export default function App() {
 <Route path="/print/enrollments/:id" element={<ProtectedRoute roles={["ADMIN","SCOLARITE"]}><PrintEnrollmentDetails/></ProtectedRoute>} />
 
 <Route path="/users" element={<ProtectedRoute roles={["ADMIN"]}><UsersList/></ProtectedRoute>} />
-<Route path="/users/:id" element={<ProtectedRoute roles={["ADMIN"]}><UserDetails/></ProtectedRoute>} />
+<Route path="/users/:id" element={<ProtectedRoute roles={["ADMIN"]}><UserView/></ProtectedRoute>} />
+
+                <Route path="/profile" element={<ProtectedRoute><Profile/></ProtectedRoute>} />
 <Route path="/print/users" element={<ProtectedRoute roles={["ADMIN"]}><PrintUsersList/></ProtectedRoute>} />
 <Route path="/print/users/:id" element={<ProtectedRoute roles={["ADMIN"]}><PrintUserDetails/></ProtectedRoute>} />
 
-<Route path="/oauth/callback" element={<OAuthCallback />} />
+ <Route path="/oauth/callback" element={<OAuthCallback />} />
 
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>

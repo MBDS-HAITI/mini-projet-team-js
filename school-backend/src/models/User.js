@@ -4,7 +4,6 @@ const userSchema = new mongoose.Schema(
   {
     email: { type: String, unique: true, required: true, lowercase: true, trim: true },
 
-    // ✅ passwordHash devient optionnel si OAuth
     passwordHash: {
       type: String,
       default: "",
@@ -17,15 +16,25 @@ const userSchema = new mongoose.Schema(
 
     studentId: { type: mongoose.Schema.Types.ObjectId, ref: "Student", default: null },
 
-    // ✅ champs OAuth
-    oauthProvider: { type: String, enum: ["google", "github", "linkedin"], default: null },
+    oauthProvider: { type: String, enum: ["google", "github", "linkedin", "facebook"], default: null },
     oauthId: { type: String, default: null },
     name: { type: String, default: "" },
-    avatar: { type: String, default: "" }
+    avatar: { type: String, default: "" },
+    blocked: { type: Boolean, default: false }
   },
   { timestamps: true }
 );
 
-userSchema.index({ oauthProvider: 1, oauthId: 1 }, { unique: true, sparse: true });
+// ✅ Unique seulement quand oauthProvider/oauthId sont des strings (donc pas null)
+userSchema.index(
+  { oauthProvider: 1, oauthId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      oauthProvider: { $type: "string" },
+      oauthId: { $type: "string" }
+    }
+  }
+);
 
 module.exports = mongoose.model("User", userSchema);

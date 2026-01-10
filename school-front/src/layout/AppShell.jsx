@@ -26,6 +26,7 @@ import DarkModeIcon from "@mui/icons-material/DarkMode";
 import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import GradeIcon from "@mui/icons-material/Grade";
+import DescriptionIcon from "@mui/icons-material/Description";
 
 
 import { Link as RouterLink, useLocation } from "react-router-dom";
@@ -54,23 +55,48 @@ export default function AppShell({ children }) {
   }, [user, role]);
 
   const gestionItems = useMemo(() => {
-    if (!user || !canManage) return [];
-    // return [
-    //   { label: "Étudiants", to: "/students", icon: <PeopleIcon /> },
-    //   { label: "Cours", to: "/courses", icon: <BookIcon /> },
-    //   { label: "Inscriptions", to: "/enrollments", icon: <HowToRegIcon /> },
-    //   { label: "Notes", to: "/grades", icon: <GradeIcon /> },
-    //   { label: "Utilisateurs", to: "/users", icon: <PeopleIcon /> }
-    // ];
-    return [
-  { label: "Étudiants", to: "/students", icon: <PeopleIcon /> },
-  { label: "Cours", to: "/courses", icon: <BookIcon /> },
-  { label: "Inscriptions", to: "/enrollments", icon: <HowToRegIcon /> },
-  { label: "Notes", to: "/grades", icon: <GradeIcon /> },
-  ...(role === "ADMIN" ? [{ label: "Utilisateurs", to: "/users", icon: <PeopleIcon /> }] : [])
-];
+  if (!user) return [];
 
-  }, [user, canManage]);
+  if (role === "ADMIN") {
+    return [
+      { label: "Étudiants", to: "/students", icon: <PeopleIcon /> },
+      { label: "Cours", to: "/courses", icon: <BookIcon /> },
+      { label: "Inscriptions", to: "/enrollments", icon: <HowToRegIcon /> },
+      { label: "Notes", to: "/grades", icon: <GradeIcon /> },
+      { label: "Utilisateurs", to: "/users", icon: <PeopleIcon /> }
+    ];
+  }
+
+  if (role === "SCOLARITE") {
+    return [
+      { label: "Étudiants", to: "/students", icon: <PeopleIcon /> },
+      { label: "Cours", to: "/courses", icon: <BookIcon /> },
+      { label: "Notes", to: "/grades", icon: <GradeIcon /> }
+    ];
+  }
+
+  if (role === "STUDENT") {
+    return [
+      { label: "Bulletin", to: "/print/bulletin", icon: <DescriptionIcon /> }
+    ];
+  }
+
+  return [];
+}, [user, role]);
+
+
+//   const gestionItems = useMemo(() => {
+//     if (!user || !canManage) return [];
+
+//     return [
+//   { label: "Étudiants", to: "/students", icon: <PeopleIcon /> },
+//   { label: "Cours", to: "/courses", icon: <BookIcon /> },
+//   { label: "Inscriptions", to: "/enrollments", icon: <HowToRegIcon /> },
+//   { label: "Notes", to: "/grades", icon: <GradeIcon /> },
+//   ...(role === "ADMIN" ? [{ label: "Utilisateurs", to: "/users", icon: <PeopleIcon /> }] : [])
+// ];
+
+//   }, [user, canManage]);
 
   const drawer = (
     <Box sx={{ height: "100%" }}>
@@ -144,14 +170,7 @@ export default function AppShell({ children }) {
             <Box sx={{ flexGrow: 1 }} />
 
             <Stack direction="row" spacing={1}>
-              <Button
-                color="inherit"
-                startIcon={<PersonAddAltIcon />}
-                component={RouterLink}
-                to="/register"
-              >
-                Créer un compte
-              </Button>
+             
 
               <Button
                 color="inherit"
@@ -207,6 +226,10 @@ export default function AppShell({ children }) {
           <Typography sx={{ mr: 2, opacity: 0.9 }}>
             {user.email}
           </Typography>
+
+          <Button color="inherit" component={RouterLink} to="/profile" startIcon={<HowToRegIcon />}>
+            Profil
+          </Button>
 
           <Button color="inherit" onClick={toggleColorMode} startIcon={<DarkModeIcon />}>
             Thème

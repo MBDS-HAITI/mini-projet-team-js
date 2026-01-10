@@ -7,7 +7,7 @@ import {
 const emptyForm = {
   studentId: "",
   courseId: "",
-  anneeAcademique: "2024-2025",
+  anneeAcademique: "2025-2026",
   statut: "VALIDE",
   dateInscription: new Date().toISOString().slice(0, 10), // yyyy-mm-dd
   actif: true
@@ -36,7 +36,7 @@ export default function EnrollmentForm({
       setForm({
         studentId: initialData.student?._id || initialData.studentId || "",
         courseId: initialData.course?._id || initialData.courseId || "",
-        anneeAcademique: initialData.anneeAcademique || "2024-2025",
+        anneeAcademique: initialData.anneeAcademique || "2025-2026",
         statut: initialData.statut || "VALIDE",
         dateInscription: initialData.dateInscription
           ? String(initialData.dateInscription).slice(0, 10)
@@ -119,7 +119,7 @@ export default function EnrollmentForm({
               fullWidth
               value={form.anneeAcademique}
               onChange={(e) => setForm((p) => ({ ...p, anneeAcademique: e.target.value }))}
-              placeholder="2024-2025"
+              placeholder="2025-2026"
             />
           </Grid>
 
