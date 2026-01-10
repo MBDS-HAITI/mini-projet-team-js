@@ -105,12 +105,7 @@ export default function UsersList() {
   return (
     <Box sx={{ p: 3 }}>
       <Grid container alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
-        <Grid item>
-          <Typography variant="h5" sx={{ fontWeight: 900 }}>Utilisateurs</Typography>
-          <Typography variant="body2" color="text.secondary">
-            ADMIN • SCOLARITE • STUDENT (lié à un étudiant)
-          </Typography>
-        </Grid>
+       
 
         <Grid item>
           <Stack direction="row" spacing={1}>

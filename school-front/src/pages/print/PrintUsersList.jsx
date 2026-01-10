@@ -42,9 +42,7 @@ export default function PrintUsersList() {
           <Typography variant="h5" sx={{ fontWeight: 900, mb: 1 }}>
             Liste des utilisateurs
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Généré le {now}
-          </Typography>
+        
 
           <Divider sx={{ mb: 2 }} />
 

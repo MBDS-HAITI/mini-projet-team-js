@@ -12,26 +12,41 @@ const User = require("./models/User");
 async function connect() {
   const uri = process.env.MONGODB_URI;
   if (!uri) throw new Error("MONGODB_URI manquant dans .env");
+
   await mongoose.connect(uri);
+
+  console.log("DB name:", mongoose.connection.name);
+  console.log("User collection:", User.collection.name);
   console.log("✅ MongoDB connected (seed)");
+
+  // ✅ IMPORTANT: supprimer l'ancien index unique qui casse le seed (null/null)
+  // (si index inexistant, on ignore)
+  try {
+    await mongoose.connection.collection(User.collection.name).dropIndex("oauthProvider_1_oauthId_1");
+    console.log("🧹 dropped index: oauthProvider_1_oauthId_1");
+  } catch (e) {
+    // ignore si l'index n'existe pas
+  }
 }
 
 async function resetCollections() {
-  const cols = await mongoose.connection.db.listCollections().toArray();
+  const db = mongoose.connection.db;
+  const cols = await db.listCollections().toArray();
   const names = new Set(cols.map((c) => c.name));
 
-  const dropIfExists = async (name) => {
+  const drop = async (name) => {
     if (names.has(name)) {
-      await mongoose.connection.db.dropCollection(name);
+      await db.dropCollection(name);
       console.log(`🧹 dropped: ${name}`);
     }
   };
 
-  await dropIfExists("grades");
-  await dropIfExists("enrollments");
-  await dropIfExists("users");
-  await dropIfExists("courses");
-  await dropIfExists("students");
+  // drop dans l'ordre (dépendances d'abord)
+  await drop(Grade.collection.name);
+  await drop(Enrollment.collection.name);
+  await drop(User.collection.name);
+  await drop(Course.collection.name);
+  await drop(Student.collection.name);
 }
 
 async function ensureIndexes() {
@@ -46,7 +61,7 @@ async function ensureIndexes() {
 }
 
 async function seed() {
-  // STUDENTS
+  // ---------------- STUDENTS ----------------
   const students = await Student.insertMany([
     {
       matricule: "ST-0001",
@@ -79,7 +94,7 @@ async function seed() {
   const [s1, s2, s3] = students;
   console.log(`✅ students: ${students.length}`);
 
-  // COURSES (niveau/filiere requis chez toi)
+  // ---------------- COURSES ----------------
   const courses = await Course.insertMany([
     {
       code: "INF101",
@@ -112,15 +127,15 @@ async function seed() {
   const [c1, c2, c3] = courses;
   console.log(`✅ courses: ${courses.length}`);
 
-  // ENROLLMENTS (frontend: anneeAcademique/statut/dateInscription)
-  const anneeAcademique = "2024-2025";
+  // ---------------- ENROLLMENTS ----------------
+  const anneeAcademique = "2025-2026";
   const enrollments = await Enrollment.insertMany([
     {
       studentId: s1._id,
       courseId: c1._id,
       anneeAcademique,
       statut: "VALIDE",
-      dateInscription: new Date("2024-09-10"),
+      dateInscription: new Date("2025-09-10"),
       actif: true,
       semestre: "S1"
     },
@@ -129,7 +144,7 @@ async function seed() {
       courseId: c2._id,
       anneeAcademique,
       statut: "EN_ATTENTE",
-      dateInscription: new Date("2024-09-11"),
+      dateInscription: new Date("2025-09-11"),
       actif: true,
       semestre: "S1"
     },
@@ -138,7 +153,7 @@ async function seed() {
       courseId: c1._id,
       anneeAcademique,
       statut: "VALIDE",
-      dateInscription: new Date("2024-09-09"),
+      dateInscription: new Date("2025-09-09"),
       actif: true,
       semestre: "S1"
     },
@@ -147,14 +162,14 @@ async function seed() {
       courseId: c3._id,
       anneeAcademique,
       statut: "VALIDE",
-      dateInscription: new Date("2024-09-08"),
+      dateInscription: new Date("2025-09-08"),
       actif: true,
       semestre: "S1"
     }
   ]);
   console.log(`✅ enrollments: ${enrollments.length}`);
 
-  // GRADES (studentId+courseId+periode unique)
+  // ---------------- GRADES ----------------
   const grades = await Grade.insertMany([
     {
       studentId: s1._id,
@@ -186,12 +201,15 @@ async function seed() {
   ]);
   console.log(`✅ grades: ${grades.length}`);
 
-  // USERS
+  // ---------------- USERS ----------------
   const passwordHash = await bcrypt.hash("1234", 10);
 
   const users = await User.insertMany([
+    // comptes staff
     { email: "admin@school.com", passwordHash, role: "ADMIN", studentId: null },
     { email: "scolarite@school.com", passwordHash, role: "SCOLARITE", studentId: null },
+
+    // comptes étudiants (liés à Student)
     { email: "jean.pierre@student.com", passwordHash, role: "STUDENT", studentId: s1._id },
     { email: "marie.louis@student.com", passwordHash, role: "STUDENT", studentId: s2._id }
   ]);
@@ -213,6 +231,7 @@ async function seed() {
     await seed();
   } catch (e) {
     console.error("❌ Seed error:", e);
+    if (e?.writeErrors) console.error("writeErrors:", e.writeErrors.map((w) => w.errmsg));
     process.exitCode = 1;
   } finally {
     await mongoose.disconnect();

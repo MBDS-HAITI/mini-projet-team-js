@@ -1,11 +1,13 @@
 import React, { useContext, useState } from "react";
 import { Box, Button, Container, TextField, Typography } from "@mui/material";
 import { AuthContext } from "../../auth/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 
 export default function Login() {
-  const { login } = useContext(AuthContext);
+  const { login, user } = useContext(AuthContext);
   const nav = useNavigate();
+
+  if (user) return <Navigate to="/" replace />;  // prevent logged-in users from seeing login
 
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:7010";
 
@@ -17,16 +19,29 @@ export default function Login() {
   const [password, setPassword] = useState("Admin@123");
   const [error, setError] = useState("");
 
+  // const submit = async (e) => {
+  //   e.preventDefault();
+  //   setError("");
+  //   try {
+  //     await login(email, password);
+  //     nav("/");
+  //   } catch (err) {
+  //     setError(err?.response?.data?.message || err?.message || "Erreur connexion");
+  //   }
+  // };
+
   const submit = async (e) => {
-    e.preventDefault();
-    setError("");
-    try {
-      await login(email, password);
-      nav("/");
-    } catch (err) {
-      setError(err?.response?.data?.message || err?.message || "Erreur connexion");
-    }
-  };
+  e.preventDefault();
+  setError("");
+  try {
+    const u = await login(email, password); // ✅ récupère le user
+    // redirection vers /, ton App.jsx redirige selon role
+    nav("/", { replace: true });
+  } catch (err) {
+    setError(err?.response?.data?.message || err?.message || "Erreur connexion");
+  }
+};
+
 
   return (
     <Container maxWidth="sm">

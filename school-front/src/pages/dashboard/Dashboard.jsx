@@ -3,6 +3,7 @@ import { Box, Button, Card, CardContent, Grid, Typography } from "@mui/material"
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { api } from "../../api/http";
 import { AuthContext } from "../../auth/AuthContext";
+import { Navigate, useNavigate } from "react-router-dom";
 
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
@@ -22,6 +23,13 @@ function KpiCard({ title, value }) {
 
 export default function Dashboard() {
   const { user } = useContext(AuthContext);
+  const nav = useNavigate();
+
+  // ✅ si STUDENT sans studentId => page link
+  if (user?.role === "STUDENT" && !user?.studentId) {
+    return <Navigate to="/student/link" replace />;
+  }
+
   const [data, setData] = useState(null);
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(true);
@@ -29,11 +37,19 @@ export default function Dashboard() {
   const load = async () => {
     setLoading(true);
     setErr("");
+
     try {
       const res = await api.get("/api/dashboard");
       setData(res.data);
     } catch (e) {
-      setErr(e?.response?.data?.message || "Erreur dashboard");
+      const msg = e?.response?.data?.message || "Erreur dashboard";
+
+      if (msg === "Student profile not linked") {
+        nav("/student/link", { replace: true });
+        return;
+      }
+
+      setErr(msg);
     } finally {
       setLoading(false);
     }
@@ -52,20 +68,20 @@ export default function Dashboard() {
   const charts = data?.charts || {};
   const enrollmentsByStatut = charts.enrollmentsByStatut || [];
   const gradesByRange = charts.gradesByRange || [];
+  const gradesByFiliere = charts.gradesByFiliere || [];
 
-  // couleurs auto (pas besoin de fixer, mais recharts a besoin de Cell)
   const pieColors = ["#8884d8", "#82ca9d", "#ffc658", "#ff7f7f"];
+
+  const showEnrollChart = user?.role === "ADMIN" || user?.role === "STUDENT";
 
   return (
     <Box sx={{ p: 3 }}>
       <Grid container alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
         <Grid item>
-          <Typography variant="h4" sx={{ fontWeight: 900 }} color="text.primary">
+          <Typography variant="h4" sx={{ fontWeight: 900 }}>
             {title}
           </Typography>
-        
         </Grid>
-
         <Grid item>
           <Button variant="outlined" startIcon={<RefreshIcon />} onClick={load} disabled={loading}>
             Rafraîchir
@@ -81,20 +97,31 @@ export default function Dashboard() {
         </Card>
       )}
 
-      {/* KPI */}
+      {/* KPI selon rôle */}
       <Grid container spacing={2} sx={{ mb: 2 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <KpiCard title="Étudiants" value={k.students ?? 0} />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <KpiCard title="Cours" value={k.courses ?? 0} />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <KpiCard title="Inscriptions" value={k.enrollments ?? 0} />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <KpiCard title="Notes" value={k.grades ?? 0} />
-        </Grid>
+        {user?.role === "ADMIN" && (
+          <>
+            <Grid item xs={12} sm={6} md={3}><KpiCard title="Étudiants" value={k.students ?? 0} /></Grid>
+            <Grid item xs={12} sm={6} md={3}><KpiCard title="Cours" value={k.courses ?? 0} /></Grid>
+            <Grid item xs={12} sm={6} md={3}><KpiCard title="Inscriptions" value={k.enrollments ?? 0} /></Grid>
+            <Grid item xs={12} sm={6} md={3}><KpiCard title="Notes" value={k.grades ?? 0} /></Grid>
+          </>
+        )}
+
+        {user?.role === "SCOLARITE" && (
+          <>
+            <Grid item xs={12} sm={6} md={4}><KpiCard title="Étudiants" value={k.students ?? 0} /></Grid>
+            <Grid item xs={12} sm={6} md={4}><KpiCard title="Cours" value={k.courses ?? 0} /></Grid>
+            <Grid item xs={12} sm={6} md={4}><KpiCard title="Notes" value={k.grades ?? 0} /></Grid>
+          </>
+        )}
+
+        {user?.role === "STUDENT" && (
+          <>
+            <Grid item xs={12} sm={6} md={6}><KpiCard title="Mes inscriptions" value={k.myEnrollments ?? 0} /></Grid>
+            <Grid item xs={12} sm={6} md={6}><KpiCard title="Mes notes" value={k.myGrades ?? 0} /></Grid>
+          </>
+        )}
       </Grid>
 
       {/* Charts */}
@@ -102,19 +129,29 @@ export default function Dashboard() {
         <Grid item xs={12} md={7}>
           <Card sx={{ borderRadius: 2, height: 420 }}>
             <CardContent sx={{ height: "100%" }}>
-              <Typography sx={{ fontWeight: 800, mb: 1 }} color="text.primary">
-                Inscriptions par statut
+              <Typography sx={{ fontWeight: 800, mb: 1 }}>
+                {showEnrollChart ? "Inscriptions par statut" : "Notes par filière"}
               </Typography>
 
-              <Box sx={{ height: 340, width: 500 }}>
+              <Box sx={{ height: 340, width: 450 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={enrollmentsByStatut}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis allowDecimals={false} />
-                    <Tooltip />
-                    <Bar dataKey="value" />
-                  </BarChart>
+                  {showEnrollChart ? (
+                    <BarChart data={enrollmentsByStatut}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis allowDecimals={false} />
+                      <Tooltip />
+                      <Bar dataKey="value" />
+                    </BarChart>
+                  ) : (
+                    <BarChart data={gradesByFiliere}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis allowDecimals={false} />
+                      <Tooltip />
+                      <Bar dataKey="value" />
+                    </BarChart>
+                  )}
                 </ResponsiveContainer>
               </Box>
             </CardContent>
@@ -124,11 +161,11 @@ export default function Dashboard() {
         <Grid item xs={12} md={5}>
           <Card sx={{ borderRadius: 2, height: 420 }}>
             <CardContent sx={{ height: "100%" }}>
-              <Typography sx={{ fontWeight: 800, mb: 1 }} color="text.primary">
+              <Typography sx={{ fontWeight: 800, mb: 1 }}>
                 Répartition des notes
               </Typography>
 
-              <Box sx={{ height: 340, width: 400 }}>
+              <Box sx={{ height: 340, width: 460 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie

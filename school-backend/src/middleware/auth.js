@@ -8,7 +8,7 @@ module.exports = function auth(req, res, next) {
     if (!token) return res.status(401).json({ message: "Non autorisé" });
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    req.user = decoded; // { sub, email, role, studentId }
     next();
   } catch (e) {
     return res.status(401).json({ message: "Token invalide" });

@@ -27,14 +27,21 @@ async function upsertOAuthUser({ provider, oauthId, email, name, avatar }) {
       passwordHash: ""
     });
   } else {
-    user.oauthProvider = user.oauthProvider || provider;
-    user.oauthId = user.oauthId || oauthId;
-    user.name = user.name || name || "";
-    user.avatar = user.avatar || avatar || "";
+    // user.oauthProvider = user.oauthProvider || provider;
+    // user.oauthId = user.oauthId || oauthId;
+    // user.name = user.name || name || "";
+    // user.avatar = user.avatar || avatar || "";
+    // await user.save();
+    // ne change jamais le role existant !
+    user.oauthProvider = provider;
+    user.oauthId = oauthId;
+    if (name) user.name = name;
+    if (avatar) user.avatar = avatar;
     await user.save();
   }
 
-  if (user.role === "STUDENT" && !user.studentId && emailLower) {
+  // if (user.role === "STUDENT" && !user.studentId && emailLower) {
+  if (!user.studentId && emailLower) {
     const s = await Student.findOne({ email: emailLower });
     if (s) {
       user.studentId = s._id;

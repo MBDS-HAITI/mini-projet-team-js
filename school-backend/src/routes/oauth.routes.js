@@ -17,8 +17,8 @@ function signToken(user) {
   });
 }
 
-function redirectWithToken(res, token) {
-  const url = `${process.env.FRONTEND_URL}/oauth/callback?token=${encodeURIComponent(token)}`;
+function redirectWithToken(res, token, studentLinked) {
+  const url = `${process.env.FRONTEND_URL}/oauth/callback?token=${encodeURIComponent(token)}&studentLinked=${studentLinked ? 1 : 0}`;
   return res.redirect(url);
 }
 
@@ -40,8 +40,9 @@ router.get(
     failureRedirect: `${process.env.FRONTEND_URL}/login?oauth=fail`
   }),
   (req, res) => {
+    if (req.user.blocked) return res.redirect(`${process.env.FRONTEND_URL}/login?oauth=blocked`);
     const token = signToken(req.user);
-    redirectWithToken(res, token);
+    redirectWithToken(res, token, !!req.user.studentId);
   }
 );
 
@@ -54,7 +55,11 @@ router.get("/github", passport.authenticate("github", { session: false }));
 router.get(
   "/github/callback",
   passport.authenticate("github", { session: false, failureRedirect: failRedirect() }),
-  (req, res) => redirectWithToken(res, signToken(req.user))
+  (req, res) => {
+    if (req.user.blocked) return res.redirect(`${process.env.FRONTEND_URL}/login?oauth=blocked`);
+    const token = signToken(req.user);
+    redirectWithToken(res, token, !!req.user.studentId);
+  }
 );
 
 // ---- LinkedIn
@@ -62,7 +67,11 @@ router.get("/linkedin", passport.authenticate("linkedin", { session: false }));
 router.get(
   "/linkedin/callback",
   passport.authenticate("linkedin", { session: false, failureRedirect: failRedirect() }),
-  (req, res) => redirectWithToken(res, signToken(req.user))
+  (req, res) => {
+    if (req.user.blocked) return res.redirect(`${process.env.FRONTEND_URL}/login?oauth=blocked`);
+    const token = signToken(req.user);
+    redirectWithToken(res, token, !!req.user.studentId);
+  }
 );
 
 // ---- Facebook
@@ -76,7 +85,11 @@ router.get(
 router.get(
   "/facebook/callback",
   passport.authenticate("facebook", { session: false, failureRedirect: failRedirect() }),
-  (req, res) => redirectWithToken(res, signToken(req.user))
+  (req, res) => {
+    if (req.user.blocked) return res.redirect(`${process.env.FRONTEND_URL}/login?oauth=blocked`);
+    const token = signToken(req.user);
+    redirectWithToken(res, token, !!req.user.studentId);
+  }
 );
 
 module.exports = router;

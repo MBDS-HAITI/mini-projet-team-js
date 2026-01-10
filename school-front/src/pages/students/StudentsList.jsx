@@ -23,7 +23,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import PrintIcon from "@mui/icons-material/Print";
-import SearchIcon from "@mui/icons-material/Search";
 
 import { api } from "../../api/http";
 import { Link as RouterLink } from "react-router-dom";
@@ -38,6 +37,7 @@ export default function StudentsList() {
   const [openForm, setOpenForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [info, setInfo] = useState("");
 
   const load = async () => {
     setLoading(true);
@@ -82,9 +82,19 @@ export default function StudentsList() {
   const submitForm = async (payload) => {
     setSaving(true);
     setError("");
+    setInfo("");
     try {
-      if (editing?._id) await api.put(`/api/students/${editing._id}`, payload);
-      else await api.post("/api/students", payload);
+      if (editing?._id) {
+        await api.put(`/api/students/${editing._id}`, payload);
+        setInfo("Étudiant mis à jour.");
+      } else {
+        const res = await api.post("/api/students", payload);
+        if (res.data?.mailSent) {
+          setInfo("Étudiant créé. Un e-mail a été envoyé pour l'etudiant.");
+        } else {
+          setInfo(`Étudiant créé, mais l'e-mail n'a pas pu être envoyé${res.data?.mailError ? `: ${res.data.mailError}` : ''}`);
+        }
+      }
 
       setOpenForm(false);
       await load();
@@ -144,9 +154,6 @@ export default function StudentsList() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
-          <Button variant="outlined" startIcon={<SearchIcon />}>
-            Rechercher
-          </Button>
         </CardContent>
       </Card>
 
@@ -154,6 +161,14 @@ export default function StudentsList() {
         <Card sx={{ mb: 2, border: "1px solid", borderColor: "error.main", borderRadius: 2 }}>
           <CardContent>
             <Typography color="error">{error}</Typography>
+          </CardContent>
+        </Card>
+      )}
+
+      {info && (
+        <Card sx={{ mb: 2, border: "1px solid", borderColor: "success.main", borderRadius: 2 }}>
+          <CardContent>
+            <Typography color="success.main">{info}</Typography>
           </CardContent>
         </Card>
       )}
