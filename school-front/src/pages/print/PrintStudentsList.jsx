@@ -12,7 +12,7 @@ export default function PrintStudentsList() {
     setLoading(true);
     try {
       const res = await api.get("/api/students");
-      setItems(res.data);
+      setItems(Array.isArray(res.data) ? res.data : (res.data?.data ?? []));
     } finally {
       setLoading(false);
     }
@@ -30,16 +30,15 @@ export default function PrintStudentsList() {
       <PrintToolbar title="Aperçu - Liste des étudiants" backTo="/students" className="no-print"/>
       <Container maxWidth="md" sx={{ py: 4 }}>
         { <Box sx={{ display: "flex", justifyContent: "center", alignItems: "start", mb: 2 }}>
-          <Box>
-            <Typography variant="h5" sx={{ fontWeight: 800 }}>Liste des étudiants</Typography>
-            {/* <Typography variant="body2" color="text.secondary">
-              Aperçu avant impression • {now}
-            </Typography> */}
+          <Box sx={{ textAlign: "center" }}>
+            <Typography variant="h4" sx={{ fontWeight: 800, mb: 1 }}>Liste des étudiants</Typography>
+            <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+              École Polytechnique - Gestion Scolaire
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Généré le {now} • {items.length} étudiant{items.length !== 1 ? 's' : ''} au total
+            </Typography>
           </Box>
-
-          {/* <Button variant="contained" startIcon={<PrintIcon />} onClick={() => window.print()}>
-            Imprimer
-          </Button> */}
         </Box> }
 
         <Divider sx={{ mb: 2 }} />
@@ -47,36 +46,48 @@ export default function PrintStudentsList() {
         {loading ? (
           <Typography>Chargement...</Typography>
         ) : (
-          <Table size="small" aria-label="students-print-table">
+          <Table size="small" aria-label="students-print-table" sx={{ mt: 2 }}>
             <TableHead>
-              <TableRow>
-                <TableCell><b>Matricule</b></TableCell>
-                <TableCell><b>Nom complet</b></TableCell>
-                <TableCell><b>Email</b></TableCell>
-                <TableCell><b>Niveau</b></TableCell>
-                <TableCell><b>Filière</b></TableCell>
-                <TableCell><b>Actif</b></TableCell>
+              <TableRow sx={{ bgcolor: 'grey.100' }}>
+                <TableCell sx={{ fontWeight: 'bold', borderBottom: '2px solid #000' }}>Matricule</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', borderBottom: '2px solid #000' }}>Nom complet</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', borderBottom: '2px solid #000' }}>Email</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', borderBottom: '2px solid #000' }}>Niveau</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', borderBottom: '2px solid #000' }}>Filière</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', borderBottom: '2px solid #000' }}>Statut</TableCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
-              {items.map((s) => (
-                <TableRow key={s._id}>
-                  <TableCell>{s.matricule}</TableCell>
-                  <TableCell>{s.prenom} {s.nom}</TableCell>
-                  <TableCell>{s.email}</TableCell>
+              {items.map((s, index) => (
+                <TableRow key={s._id} sx={{ '&:nth-of-type(odd)': { bgcolor: 'grey.50' } }}>
+                  <TableCell sx={{ fontFamily: 'monospace', fontWeight: 500 }}>{s.matricule}</TableCell>
+                  <TableCell sx={{ fontWeight: 500 }}>{s.prenom} {s.nom}</TableCell>
+                  <TableCell sx={{ fontSize: '0.875rem' }}>{s.email}</TableCell>
                   <TableCell>{s.niveau || "-"}</TableCell>
                   <TableCell>{s.filiere || "-"}</TableCell>
-                  <TableCell>{s.actif ? "Oui" : "Non"}</TableCell>
+                  <TableCell>
+                    <Typography
+                      sx={{
+                        fontWeight: 500,
+                        color: s.actif ? 'success.main' : 'error.main'
+                      }}
+                    >
+                      {s.actif ? "Actif" : "Inactif"}
+                    </Typography>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         )}
 
-        <Box sx={{ mt: 3 }}>
-          <Typography variant="body2" color="text.secondary">
-            {now}
+        <Box sx={{ mt: 4, pt: 2, borderTop: '1px solid #ccc' }}>
+          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+            Document généré automatiquement par le système de gestion scolaire • {now}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', mt: 1 }}>
+            École Polytechnique - Service Scolarité
           </Typography>
         </Box>
       </Container>
