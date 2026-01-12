@@ -11,6 +11,8 @@ import Dashboard from "./pages/dashboard/Dashboard";
 
 import StudentsList from "./pages/students/StudentsList";
 import StudentDetails from "./pages/students/StudentsDetails";
+import StudentEdit from "./pages/students/StudentEdit";
+import StudentCreate from "./pages/students/StudentCreate";
 
 import PrintStudentsList from "./pages/print/PrintStudentsList";
 import PrintStudentDetails from "./pages/print/PrintStudentDetails";
@@ -152,10 +154,26 @@ export default function App() {
                   }
                 />
                 <Route
+                  path="/students/create"
+                  element={
+                    <ProtectedRoute roles={["ADMIN", "SCOLARITE"]}>
+                      <StudentCreate />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/students/:id"
                   element={
                     <ProtectedRoute roles={["ADMIN", "SCOLARITE"]}>
                       <StudentDetails />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/students/:id/edit"
+                  element={
+                    <ProtectedRoute roles={["ADMIN", "SCOLARITE"]}>
+                      <StudentEdit />
                     </ProtectedRoute>
                   }
                 />
