@@ -60,18 +60,19 @@ export default function CourseDetails() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 3 }}>
+    <Container maxWidth="md" sx={{ py: 4 }}>
       {/* Top actions */}
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-        <Typography variant="h5" sx={{ fontWeight: 900 }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+        <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: 1, color: 'primary.main' }}>
           Détails du cours
         </Typography>
 
-        <Stack direction="row" spacing={1}>
+        <Stack direction="row" spacing={2}>
           <Button
             variant="outlined"
             startIcon={<ArrowBackIcon />}
             onClick={() => navigate(-1)}
+            sx={{ borderRadius: 2, fontWeight: 700 }}
           >
             Retour
           </Button>
@@ -82,6 +83,7 @@ export default function CourseDetails() {
             component={RouterLink}
             to={`/print/courses/${id}`}
             disabled={!c}
+            sx={{ borderRadius: 2, fontWeight: 700 }}
           >
             Imprimer / PDF
           </Button>
@@ -91,6 +93,7 @@ export default function CourseDetails() {
             startIcon={<EditIcon />}
             onClick={() => setOpenForm(true)}
             disabled={!c}
+            sx={{ borderRadius: 2, fontWeight: 700, boxShadow: 2 }}
           >
             Modifier
           </Button>
@@ -98,66 +101,70 @@ export default function CourseDetails() {
       </Stack>
 
       {error && (
-        <Card sx={{ mb: 2, border: "1px solid", borderColor: "error.main" }}>
-          <CardContent><Typography color="error">{error}</Typography></CardContent>
+        <Card sx={{ mb: 2, border: "2px solid", borderColor: "error.main", boxShadow: 2 }}>
+          <CardContent><Typography color="error" sx={{ fontWeight: 700 }}>{error}</Typography></CardContent>
         </Card>
       )}
 
       {/* Content */}
-      <Card variant="outlined" sx={{ borderRadius: 3 }}>
-        <CardContent sx={{ p: 3 }}>
+      <Card variant="outlined" sx={{ borderRadius: 4, boxShadow: 4, background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)' }}>
+        <CardContent sx={{ p: 4 }}>
           {loading ? (
             <>
-              <Skeleton height={34} width="40%" />
-              <Skeleton height={24} width="25%" />
+              <Skeleton height={38} width="40%" sx={{ mb: 1 }} />
+              <Skeleton height={28} width="25%" sx={{ mb: 2 }} />
               <Divider sx={{ my: 2 }} />
               <Grid container spacing={2}>
                 {[...Array(6)].map((_, i) => (
                   <Grid item xs={12} sm={6} key={i}>
-                    <Skeleton height={26} />
+                    <Skeleton height={30} />
                   </Grid>
                 ))}
               </Grid>
             </>
           ) : !c ? (
-            <Typography>Cours introuvable.</Typography>
+            <Typography sx={{ fontWeight: 700, color: 'text.secondary' }}>Cours introuvable.</Typography>
           ) : (
             <>
-              {/* Header card (style BudgetHaiti) */}
-              <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 2 }}>
+              {/* Header card modernisé */}
+              <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 3 }}>
                 <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 900 }}>
+                  <Typography variant="h5" sx={{ fontWeight: 900, color: 'secondary.main', mb: 1 }}>
                     {c.titre}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Code: <b>{c.code}</b> • ID: {c._id}
-                  </Typography>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Chip label={`Code: ${c.code}`} color="primary" sx={{ fontWeight: 700 }} />
+                    <Chip label={`ID: ${c._id}`} color="default" sx={{ fontWeight: 700 }} />
+                  </Stack>
                 </Box>
 
                 <Chip
                   label={headerBadge}
-                  variant="outlined"
-                  sx={{ fontWeight: 700 }}
+                  color={c.actif ? "success" : "error"}
+                  sx={{ fontWeight: 700, fontSize: 16, px: 2, py: 1, borderRadius: 2 }}
                 />
               </Stack>
 
               <Divider sx={{ my: 2 }} />
 
-              <Grid container spacing={2}>
+              <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
-                  <Typography><b>Crédit:</b> {c.credit ?? 0}</Typography>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700 }}><b>Crédit:</b> <span style={{ color: '#1976d2' }}>{c.credit ?? 0}</span></Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Typography><b>Niveau:</b> {c.niveau || "-"}</Typography>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700 }}><b>Niveau:</b> <span style={{ color: '#1976d2' }}>{c.niveau || "-"}</span></Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Typography><b>Filière:</b> {c.filiere || "-"}</Typography>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700 }}><b>Filière:</b> <span style={{ color: '#1976d2' }}>{c.filiere || "-"}</span></Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Typography><b>Actif:</b> {c.actif ? "Oui" : "Non"}</Typography>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700 }}><b>Actif:</b> <span style={{ color: c.actif ? '#388e3c' : '#d32f2f' }}>{c.actif ? "Oui" : "Non"}</span></Typography>
                 </Grid>
                 <Grid item xs={12}>
-                  <Typography><b>Description:</b> {c.description || "-"}</Typography>
+                  <Box sx={{ mt: 2, p: 2, background: '#fff', borderRadius: 2, boxShadow: 1 }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1 }}><b>Description</b></Typography>
+                    <Typography sx={{ color: 'text.secondary', fontSize: 16 }}>{c.description || "-"}</Typography>
+                  </Box>
                 </Grid>
               </Grid>
             </>

@@ -1,5 +1,19 @@
 import React, { useState } from "react";
-import { Box, Button, Card, CardContent, MenuItem, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  MenuItem,
+  TextField,
+  Typography,
+  Stack,
+  Alert,
+  Divider,
+} from "@mui/material";
+import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { Link as RouterLink } from "react-router-dom";
 import { api } from "../../api/http";
 
 export default function Register() {
@@ -40,14 +54,59 @@ export default function Register() {
   };
 
   return (
-    <Box sx={{ maxWidth: 520, mx: "auto", mt: 2 }}>
-      <Card sx={{ borderRadius: 3 }}>
-        <CardContent>
-          <Typography variant="h5" sx={{ fontWeight: 900, mb: 2 }}>
-            Créer un utilisateur
-          </Typography>
+    <Box sx={{ maxWidth: 600, mx: "auto", mt: 4, px: 2 }}>
+      <Card
+        sx={{
+          borderRadius: 3,
+          boxShadow: 4,
+        }}
+      >
+        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{ mb: 2 }}
+          >
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Box
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: "50%",
+                  bgcolor: "primary.main",
+                  color: "primary.contrastText",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <PersonAddAlt1Icon />
+              </Box>
+              <Box>
+                <Typography variant="h5" sx={{ fontWeight: 800 }}>
+                  Nouvel utilisateur
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Créez un compte et envoyez automatiquement les identifiants.
+                </Typography>
+              </Box>
+            </Stack>
 
-          <form onSubmit={submit}>
+            <Button
+              variant="text"
+              startIcon={<ArrowBackIcon />}
+              component={RouterLink}
+              to="/users"
+              sx={{ textTransform: "none" }}
+            >
+              Retour à la liste
+            </Button>
+          </Stack>
+
+          <Divider sx={{ mb: 3 }} />
+
+          <form onSubmit={submit} noValidate>
             <TextField
               fullWidth
               label="Email"
@@ -83,17 +142,42 @@ export default function Register() {
             <TextField
               fullWidth
               label="Mot de passe (optionnel - sinon généré)"
+              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               sx={{ mb: 2 }}
             />
 
-            {err && <Typography color="error" sx={{ mb: 2 }}>{err}</Typography>}
-            {msg && <Typography color="success.main" sx={{ mb: 2 }}>{msg}</Typography>}
+            {err && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {err}
+              </Alert>
+            )}
+            {msg && (
+              <Alert severity="success" sx={{ mb: 2 }}>
+                {msg}
+              </Alert>
+            )}
 
-            <Button fullWidth variant="contained" type="submit" disabled={loading}>
-              {loading ? "Création..." : "Créer + Envoyer email"}
-            </Button>
+            <Stack direction="row" spacing={2} sx={{ mt: 1 }}>
+              <Button
+                fullWidth
+                variant="outlined"
+                color="inherit"
+                component={RouterLink}
+                to="/users"
+              >
+                Annuler
+              </Button>
+              <Button
+                fullWidth
+                variant="contained"
+                type="submit"
+                disabled={loading}
+              >
+                {loading ? "Création..." : "Créer + envoyer l'email"}
+              </Button>
+            </Stack>
           </form>
         </CardContent>
       </Card>
