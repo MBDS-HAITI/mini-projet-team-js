@@ -47,7 +47,7 @@ export default function OAuthCallback() {
           target = studentLinked === "0" ? "/student/link?missingStudent=1" : "/student";
         }
         nav(target, { replace: true });
-        try { window.history.replaceState(null, "", target); } catch (err) { /* ignore */ }
+        try { window.history.replaceState(null, "", target); } catch { /* ignore */ }
 
       } catch (e) {
         setError(e?.response?.data?.message || e?.message || "OAuth échoué");

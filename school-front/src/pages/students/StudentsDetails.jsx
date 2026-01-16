@@ -9,17 +9,12 @@ import {
   Avatar,
   Chip,
   Stack,
-  Fade,
-  useTheme
+  Fade
 } from "@mui/material";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EditIcon from "@mui/icons-material/Edit";
 import PrintIcon from "@mui/icons-material/Print";
-import PersonIcon from "@mui/icons-material/Person";
-import EmailIcon from "@mui/icons-material/Email";
-import SchoolIcon from "@mui/icons-material/School";
-import BadgeIcon from "@mui/icons-material/Badge";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 import { useNavigate, useParams, Link as RouterLink } from "react-router-dom";
@@ -28,7 +23,6 @@ import { api } from "../../api/http";
 export default function StudentDetails() {
   const { id } = useParams();
   const nav = useNavigate();
-  const theme = useTheme();
 
   const [student, setStudent] = useState(null);
 

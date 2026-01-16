@@ -31,7 +31,7 @@ import DescriptionIcon from "@mui/icons-material/Description";
 
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { AuthContext } from "../auth/AuthContext";
-import { ColorModeContext } from "../theme/ThemeProvider";
+import { ColorModeContext } from "../theme/ColorModeContext";
 
 const drawerWidth = 260;
 
@@ -42,9 +42,6 @@ export default function AppShell({ children }) {
   const { pathname } = useLocation();
 
   const role = user?.role;
-  const isAdmin = role === "ADMIN";
-  const isScolarite = role === "SCOLARITE";
-  const canManage = isAdmin || isScolarite;
 
   const navItems = useMemo(() => {
     if (!user) return [];

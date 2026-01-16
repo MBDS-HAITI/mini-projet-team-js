@@ -9,8 +9,7 @@ import {
   Typography,
   Alert,
   Fade,
-  useTheme,
-  useMediaQuery
+  useTheme
 } from "@mui/material";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -25,8 +24,6 @@ import { api } from "../../api/http";
 export default function CourseCreate() {
   const nav = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");

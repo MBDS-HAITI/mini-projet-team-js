@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Box, Card, CardContent, Chip, Container, Divider, Grid, Typography
 } from "@mui/material";
@@ -11,7 +11,7 @@ export default function PrintGradeDetails() {
   const [g, setG] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     try {
       const res = await api.get(`/api/grades/${id}`);
@@ -19,9 +19,9 @@ export default function PrintGradeDetails() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
-  useEffect(() => { load(); }, [id]);
+  useEffect(() => { load(); }, [load]);
 
   const now = useMemo(() => new Date().toLocaleString(), []);
 

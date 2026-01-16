@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState , useCallback} from "react";
 import {
   Box,
   Button,
@@ -26,7 +26,7 @@ export default function UserView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const load = async () => {
+  const loadUsers = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
@@ -39,9 +39,9 @@ export default function UserView() {
     } finally {
       setLoading(false);
     }
-  };
+  },[id]);
 
-  useEffect(() => { load(); }, [id]);
+  useEffect(() => { loadUsers(); });
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
@@ -106,7 +106,7 @@ export default function UserView() {
         }}
       >
         <CardContent sx={{ p: 4 }}>
-          {!user ? (
+          {loading ? (
             <>
               <Skeleton height={32} width="60%" sx={{ mb: 2 }} />
               <Grid container spacing={3}>

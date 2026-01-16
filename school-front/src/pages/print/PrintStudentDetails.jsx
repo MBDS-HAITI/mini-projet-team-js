@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Box, Button, Container, Divider, Grid, Typography } from "@mui/material";
 import PrintIcon from "@mui/icons-material/Print";
 import { useParams } from "react-router-dom";
@@ -10,7 +10,7 @@ export default function PrintStudentDetails() {
   const [s, setS] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     try {
       const res = await api.get(`/api/students/${id}`);
@@ -18,11 +18,11 @@ export default function PrintStudentDetails() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     load();
-  }, [id]);
+  }, [load]);
 
   const now = useMemo(() => new Date().toLocaleString(), []);
 

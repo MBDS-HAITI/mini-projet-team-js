@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Box, Card, CardContent, Chip, Container, Divider, Grid, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { api } from "../../api/http";
@@ -16,7 +16,7 @@ export default function PrintEnrollmentDetails() {
   const [en, setEn] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     try {
       const res = await api.get(`/api/enrollments/${id}`);
@@ -24,9 +24,9 @@ export default function PrintEnrollmentDetails() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
-  useEffect(() => { load(); }, [id]);
+  useEffect(() => { load(); }, [load]);
 
   const now = useMemo(() => new Date().toLocaleString(), []);
 

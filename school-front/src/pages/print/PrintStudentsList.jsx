@@ -59,7 +59,7 @@ export default function PrintStudentsList() {
             </TableHead>
 
             <TableBody>
-              {items.map((s, index) => (
+              {items.map((s) => (
                 <TableRow key={s._id} sx={{ '&:nth-of-type(odd)': { bgcolor: 'grey.50' } }}>
                   <TableCell sx={{ fontFamily: 'monospace', fontWeight: 500 }}>{s.matricule}</TableCell>
                   <TableCell sx={{ fontWeight: 500 }}>{s.prenom} {s.nom}</TableCell>

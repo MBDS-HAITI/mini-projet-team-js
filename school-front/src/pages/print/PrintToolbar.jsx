@@ -6,8 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function PrintToolbar({
   title = "Aperçu impression",
-  backTo = "/students",
-  className = "no-print"   // ✅ ajouté
+  className = "no-print"
 }) {
   const navigate = useNavigate();
 

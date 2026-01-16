@@ -1,7 +1,6 @@
-import React, { createContext, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { createTheme, CssBaseline, ThemeProvider as MuiThemeProvider } from "@mui/material";
-
-export const ColorModeContext = createContext({ toggleColorMode: () => {} });
+import { ColorModeContext } from "./ColorModeContext";
 
 export default function AppThemeProvider({ children }) {
   const [mode, setMode] = useState(() => localStorage.getItem("mode") || "light");

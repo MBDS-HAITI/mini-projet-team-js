@@ -45,16 +45,10 @@ const statutChip = (statut) => {
 
 export default function EnrollmentsList() {
   const [items, setItems] = useState([]);
-  const [students, setStudents] = useState([]);
-  const [courses, setCourses] = useState([]);
 
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  const [openForm, setOpenForm] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [editing, setEditing] = useState(null);
 
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [enrollmentToDelete, setEnrollmentToDelete] = useState(null);
@@ -66,14 +60,12 @@ export default function EnrollmentsList() {
     setLoading(true);
     setError("");
     try {
-      const [en, st, co] = await Promise.all([
+      const [en] = await Promise.all([
         api.get("/api/enrollments"),
         api.get("/api/students"),
         api.get("/api/courses")
       ]);
       setItems(en.data);
-      setStudents(st.data);
-      setCourses(co.data);
     } catch (e) {
       setError(e?.response?.data?.message || "Erreur chargement inscriptions");
     } finally {

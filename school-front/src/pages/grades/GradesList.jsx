@@ -39,8 +39,6 @@ import { api } from "../../api/http";
 
 export default function GradesList() {
   const [items, setItems] = useState([]);
-  const [students, setStudents] = useState([]);
-  const [courses, setCourses] = useState([]);
 
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(true);
@@ -56,14 +54,12 @@ export default function GradesList() {
     setLoading(true);
     setError("");
     try {
-      const [g, s, c] = await Promise.all([
+      const [g] = await Promise.all([
         api.get("/api/grades"),
         api.get("/api/students"),
         api.get("/api/courses")
       ]);
       setItems(g.data);
-      setStudents(s.data);
-      setCourses(c.data);
     } catch (e) {
       setError(e?.response?.data?.message || "Erreur chargement notes");
     } finally {

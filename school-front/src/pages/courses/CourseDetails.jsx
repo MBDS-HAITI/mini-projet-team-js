@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Box, Button, Card, CardContent, Chip, Container, Divider, Grid,
   Skeleton, Stack, Typography
@@ -23,7 +23,7 @@ export default function CourseDetails() {
   const [openForm, setOpenForm] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
@@ -35,9 +35,9 @@ export default function CourseDetails() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
-  useEffect(() => { load(); }, [id]);
+  useEffect(() => { load(); }, [load]);
 
   const headerBadge = useMemo(() => {
     if (!c) return null;

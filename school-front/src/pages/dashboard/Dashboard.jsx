@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Box, Button, Card, CardContent, Grid, Typography } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { api } from "../../api/http";
@@ -24,17 +24,11 @@ function KpiCard({ title, value }) {
 export default function Dashboard() {
   const { user } = useContext(AuthContext);
   const nav = useNavigate();
-
-  // ✅ si STUDENT sans studentId => page link
-  if (user?.role === "STUDENT" && !user?.studentId) {
-    return <Navigate to="/student/link" replace />;
-  }
-
   const [data, setData] = useState(null);
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     setErr("");
 
@@ -53,9 +47,9 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [nav]);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
 
   const title = useMemo(() => {
     if (!user) return "Dashboard";
@@ -63,6 +57,11 @@ export default function Dashboard() {
     if (user.role === "SCOLARITE") return "Dashboard Scolarité";
     return "Mon Dashboard Étudiant";
   }, [user]);
+
+  // ✅ si STUDENT sans studentId => page link
+  if (user?.role === "STUDENT" && !user?.studentId) {
+    return <Navigate to="/student/link" replace />;
+  }
 
   const k = data?.kpis || {};
   const charts = data?.charts || {};

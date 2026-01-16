@@ -7,6 +7,9 @@ import { useNavigate, Navigate } from "react-router-dom";
 export default function Login() {
   const { login, user } = useContext(AuthContext);
   const nav = useNavigate();
+  const [email, setEmail] = useState("admin@mail.com");
+  const [password, setPassword] = useState("Admin@123");
+  const [error, setError] = useState("");
 
   if (user) return <Navigate to="/" replace />;  // prevent logged-in users from seeing login
 
@@ -15,10 +18,6 @@ export default function Login() {
   const sso = (provider) => {
     window.location.href = `${API_URL}/api/oauth/${provider}`;
   };
-
-  const [email, setEmail] = useState("admin@mail.com");
-  const [password, setPassword] = useState("Admin@123");
-  const [error, setError] = useState("");
 
   // const submit = async (e) => {
   //   e.preventDefault();
@@ -35,7 +34,7 @@ export default function Login() {
   e.preventDefault();
   setError("");
   try {
-    const u = await login(email, password); // ✅ récupère le user
+    await login(email, password);
     // redirection vers /, ton App.jsx redirige selon role
     nav("/", { replace: true });
   } catch (err) {

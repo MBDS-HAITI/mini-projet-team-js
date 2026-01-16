@@ -1,6 +1,7 @@
-import React, { createContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useMemo, useState, useCallback } from "react";
 import { api } from "../api/http";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
@@ -15,36 +16,19 @@ export function AuthProvider({ children }) {
     setUser(user);
   };
 
-   const refreshMe = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return null;
-
-    const res = await api.get("/api/auth/me");
-    const me = res.data;
-    setSession({ token, user: me });
-    return me;
-  };
-
-  const login = async (email, password) => {
+  const login = useCallback(async (email, password) => {
     const res = await api.post("/api/auth/login", { email, password });
     const { token, user } = res.data;
     setSession({ token, user });
     return user;
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
-  };
+  }, []);
 
-  useEffect(() => {
-    if (user && !localStorage.getItem("token")) {
-      localStorage.removeItem("user");
-      setUser(null);
-    }
-  }, [user]);
-
-  const value = useMemo(() => ({ user, login, logout, setSession }), [user]);
+  const value = useMemo(() => ({ user, login, logout, setSession }), [user, login, logout]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

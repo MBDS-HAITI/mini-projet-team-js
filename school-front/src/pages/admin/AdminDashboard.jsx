@@ -1,3 +1,6 @@
+import React, { useContext } from 'react';
+import { AuthContext } from '../../auth/AuthContext';
+
 export default function AdminDashboard() {
   const { user } = useContext(AuthContext);
 

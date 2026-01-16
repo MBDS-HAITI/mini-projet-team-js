@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Box,
   Button,
@@ -20,15 +20,14 @@ import {
   Avatar,
   InputAdornment,
   Fade,
-  useTheme,
-  useMediaQuery,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogContentText,
   DialogActions,
   IconButton,
-  Tooltip
+  Tooltip,
+  Alert
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -45,16 +44,13 @@ import { api } from "../../api/http";
 import { Link as RouterLink } from "react-router-dom";
 
 export default function StudentsList() {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
   const [items, setItems] = useState([]);
   const [q, setQ] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [deleteDialog, setDeleteDialog] = useState({ open: false, student: null });
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     try {
       const res = await api.get("/api/students");
@@ -64,11 +60,11 @@ export default function StudentsList() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
 
   const filtered = useMemo(() => {
     const query = q.toLowerCase();
@@ -81,6 +77,13 @@ export default function StudentsList() {
 
   return (
     <Box sx={{ p: 3, minHeight: "100vh" }}>
+      {/* ERROR ALERT */}
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError("")}>
+          {error}
+        </Alert>
+      )}
+
       {/* HEADER */}
       <Card sx={{ mb: 3, borderRadius: 3 }}>
         <CardContent>

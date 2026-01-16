@@ -9,13 +9,12 @@ export default function LinkStudentAccount() {
   const nav = useNavigate();
   const [params] = useSearchParams();
   const missingStudent = params.get("missingStudent");
-
-  if (user?.studentId) return <Navigate to="/student" replace />;
-
   const [studentEmail, setStudentEmail] = useState(user?.email || "");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const [info, setInfo] = useState("");
+
+  if (user?.studentId) return <Navigate to="/student" replace />;
 
   const submit = async (e) => {
     e.preventDefault();

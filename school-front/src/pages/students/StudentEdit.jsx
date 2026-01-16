@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Box,
   Button,
@@ -11,8 +11,7 @@ import {
   FormControlLabel,
   Alert,
   Fade,
-  useTheme,
-  useMediaQuery
+  useTheme
 } from "@mui/material";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -29,8 +28,6 @@ export default function StudentEdit() {
   const { id } = useParams();
   const nav = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -47,7 +44,7 @@ export default function StudentEdit() {
     actif: true
   });
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
@@ -68,11 +65,11 @@ export default function StudentEdit() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     load();
-  }, [id]);
+  }, [load]);
 
   const handleChange = (field) => (event) => {
     setForm(prev => ({

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Box, Button, Card, CardContent, Grid, TextField, Typography } from "@mui/material";
 import { api } from "../../api/http";
 import { AuthContext } from "../../auth/AuthContext";
@@ -6,27 +6,26 @@ import { AuthContext } from "../../auth/AuthContext";
 export default function Profile() {
   const { user, setSession } = useContext(AuthContext);
   const [me, setMe] = useState(user || null);
-  const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const [info, setInfo] = useState("");
 
   const [form, setForm] = useState({ name: "", avatar: "" });
   const [pw, setPw] = useState({ oldPassword: "", newPassword: "", confirm: "" });
 
-  useEffect(() => { if (user) setMe(user); }, [user]);
-
-  const load = async () => {
-    setLoading(true);
+  const load = useCallback(async () => {
     try {
       const res = await api.get('/api/auth/me');
       setMe(res.data.user);
       setForm({ name: res.data.user.name || '', avatar: res.data.user.avatar || '' });
     } catch (e) {
       setErr(e?.response?.data?.message || e?.message || 'Erreur');
-    } finally { setLoading(false); }
-  };
+    }
+  }, []);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const submitProfile = async () => {
     setErr(""); setInfo("");

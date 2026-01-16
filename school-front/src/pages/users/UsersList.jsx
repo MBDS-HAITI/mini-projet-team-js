@@ -21,7 +21,6 @@ import {
   InputAdornment,
   Fade,
   useTheme,
-  useMediaQuery,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -41,15 +40,15 @@ import PersonIcon from "@mui/icons-material/Person";
 import EmailIcon from "@mui/icons-material/Email";
 import { Link as RouterLink } from "react-router-dom";
 import { api } from "../../api/http";
+import { getStyles } from "./UsersList.styles";
 
 const roleChip = (role) => ({ label: role || "-", variant: "outlined" });
 
 export default function UsersList() {
   const theme = useTheme();
+  const styles = getStyles(theme);
 
   const [items, setItems] = useState([]);
-  const [students, setStudents] = useState([]);
-
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -60,13 +59,11 @@ export default function UsersList() {
     setLoading(true);
     setError("");
     try {
-      const [u, s] = await Promise.all([
+      const [u] = await Promise.all([
         api.get("/api/users"),
-        api.get("/api/students")
       ]);
       // normalize: backend returns studentId populated
       setItems(u.data.map(x => ({ ...x, student: x.studentId || null })));
-      setStudents(s.data);
     } catch (e) {
       setError(e?.response?.data?.message || "Erreur chargement utilisateurs");
     } finally {
@@ -114,53 +111,11 @@ export default function UsersList() {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        background:
-          theme.palette.mode === "dark"
-            ? "linear-gradient(135deg, #0B1220 0%, #111A2E 100%)"
-            : "linear-gradient(135deg, #F6F7FB 0%, #FFFFFF 100%)",
-        p: { xs: 2, md: 3 },
-      }}
-    >
+    <Box sx={styles.mainContainer}>
       {/* Header */}
       <Fade in timeout={600}>
-        <Card
-          sx={{
-            mb: 3,
-            background:
-              theme.palette.mode === "dark"
-                ? "linear-gradient(135deg, #1A2332 0%, #111A2E 100%)"
-                : "linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)",
-            borderRadius: 3,
-            boxShadow:
-              theme.palette.mode === "dark"
-                ? "0 8px 32px rgba(0,0,0,0.3)"
-                : "0 8px 32px rgba(0,0,0,0.1)",
-            border: `1px solid ${theme.palette.divider}`,
-            position: "relative",
-            overflow: "hidden",
-            "&::before": {
-              content: '""',
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              height: "4px",
-              background:
-                "linear-gradient(90deg, #3F51B5, #00BCD4, #3F51B5)",
-              backgroundSize: "200% 100%",
-              animation: "gradientShift 3s ease infinite",
-            },
-            "@keyframes gradientShift": {
-              "0%": { backgroundPosition: "0% 50%" },
-              "50%": { backgroundPosition: "100% 50%" },
-              "100%": { backgroundPosition: "0% 50%" },
-            },
-          }}
-        >
-          <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+        <Card sx={styles.headerCard}>
+          <CardContent sx={styles.headerCardContent}>
             <Grid
               container
               alignItems="center"
@@ -169,29 +124,11 @@ export default function UsersList() {
             >
               <Grid item xs={12} md="auto">
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                  <Avatar
-                    sx={{
-                      bgcolor: "primary.main",
-                      width: 56,
-                      height: 56,
-                      boxShadow: "0 4px 14px rgba(63, 81, 181, 0.3)",
-                    }}
-                  >
+                  <Avatar sx={styles.avatar}>
                     <PersonIcon sx={{ fontSize: 28 }} />
                   </Avatar>
                   <Box>
-                    <Typography
-                      variant="h4"
-                      sx={{
-                        fontWeight: 800,
-                        background:
-                          "linear-gradient(45deg, #3F51B5, #00BCD4)",
-                        backgroundClip: "text",
-                        WebkitBackgroundClip: "text",
-                        WebkitTextFillColor: "transparent",
-                        mb: 0.5,
-                      }}
-                    >
+                    <Typography variant="h4" sx={styles.title}>
                       Gestion des Utilisateurs
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -217,18 +154,7 @@ export default function UsersList() {
                     startIcon={<PrintIcon />}
                     component={RouterLink}
                     to="/print/users"
-                    sx={{
-                      borderRadius: 2,
-                      px: 3,
-                      py: 1.5,
-                      borderColor: "primary.main",
-                      color: "primary.main",
-                      "&:hover": {
-                        borderColor: "primary.dark",
-                        bgcolor: "primary.main",
-                        color: "white",
-                      },
-                    }}
+                    sx={styles.printButton}
                   >
                     Imprimer / PDF
                   </Button>
@@ -238,19 +164,7 @@ export default function UsersList() {
                     startIcon={<AddIcon />}
                     component={RouterLink}
                     to="/register"
-                    sx={{
-                      borderRadius: 2,
-                      px: 3,
-                      py: 1.5,
-                      background:
-                        "linear-gradient(45deg, #3F51B5, #00BCD4)",
-                      boxShadow: "0 4px 14px rgba(63, 81, 181, 0.3)",
-                      "&:hover": {
-                        background:
-                          "linear-gradient(45deg, #303F9F, #0097A7)",
-                        boxShadow: "0 6px 20px rgba(63, 81, 181, 0.4)",
-                      },
-                    }}
+                    sx={styles.addButton}
                   >
                     Nouvel utilisateur
                   </Button>
@@ -263,18 +177,8 @@ export default function UsersList() {
 
       {/* Search */}
       <Fade in timeout={800}>
-        <Card
-          sx={{
-            mb: 3,
-            borderRadius: 3,
-            boxShadow:
-              theme.palette.mode === "dark"
-                ? "0 4px 20px rgba(0,0,0,0.2)"
-                : "0 4px 20px rgba(0,0,0,0.08)",
-            border: `1px solid ${theme.palette.divider}`,
-          }}
-        >
-          <CardContent sx={{ p: 3 }}>
+        <Card sx={styles.searchCard}>
+          <CardContent sx={styles.searchCardContent}>
             <TextField
               fullWidth
               placeholder="Rechercher par email, rôle ou étudiant lié..."
@@ -287,19 +191,7 @@ export default function UsersList() {
                   </InputAdornment>
                 ),
               }}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: 2,
-                  backgroundColor: theme.palette.background.paper,
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "primary.main",
-                  },
-                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "primary.main",
-                    borderWidth: 2,
-                  },
-                },
-              }}
+              sx={styles.searchTextField}
             />
           </CardContent>
         </Card>
@@ -309,20 +201,9 @@ export default function UsersList() {
       <Fade in={!!error} timeout={500}>
         <Box>
           {error && (
-            <Card
-              sx={{
-                mb: 3,
-                border: "2px solid",
-                borderColor: "error.main",
-                borderRadius: 2,
-                backgroundColor:
-                  theme.palette.mode === "dark"
-                    ? "rgba(244, 67, 54, 0.1)"
-                    : "rgba(244, 67, 54, 0.05)",
-              }}
-            >
-              <CardContent sx={{ py: 2 }}>
-                <Typography color="error.main" sx={{ fontWeight: 500 }}>
+            <Card sx={styles.errorCard}>
+              <CardContent sx={styles.errorCardContent}>
+                <Typography color="error.main" sx={styles.errorText}>
                   ⚠️ {error}
                 </Typography>
               </CardContent>
@@ -336,34 +217,11 @@ export default function UsersList() {
         <TableContainer
           component={Paper}
           variant="outlined"
-          sx={{
-            borderRadius: 3,
-            boxShadow:
-              theme.palette.mode === "dark"
-                ? "0 8px 32px rgba(0,0,0,0.3)"
-                : "0 8px 32px rgba(0,0,0,0.1)",
-            border: `1px solid ${theme.palette.divider}`,
-            overflow: "hidden",
-          }}
+          sx={styles.tableContainer}
         >
           <Table>
             <TableHead>
-              <TableRow
-                sx={{
-                  background:
-                    theme.palette.mode === "dark"
-                      ? "linear-gradient(135deg, #1A2332 0%, #111A2E 100%)"
-                      : "linear-gradient(135deg, #F8FAFC 0%, #E3F2FD 100%)",
-                  "& .MuiTableCell-head": {
-                    fontWeight: 700,
-                    fontSize: "0.875rem",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.5px",
-                    color: theme.palette.text.primary,
-                    borderBottom: `2px solid ${theme.palette.divider}`,
-                  },
-                }}
-              >
+              <TableRow sx={styles.tableHead}>
                 <TableCell>Utilisateur</TableCell>
                 <TableCell>Rôle</TableCell>
                 <TableCell>Étudiant lié</TableCell>
@@ -455,13 +313,7 @@ export default function UsersList() {
                         gap: 2,
                       }}
                     >
-                      <PersonIcon
-                        sx={{
-                          fontSize: 64,
-                          color: "text.disabled",
-                          opacity: 0.5,
-                        }}
-                      />
+                      <PersonIcon sx={styles.emptyStateIcon} />
                       <Typography variant="h6" color="text.secondary">
                         Aucun utilisateur trouvé
                       </Typography>
@@ -488,46 +340,19 @@ export default function UsersList() {
                     <TableRow
                       key={u._id}
                       hover
-                      sx={{
-                        backgroundColor:
-                          index % 2 === 0
-                            ? "transparent"
-                            : theme.palette.mode === "dark"
-                            ? "rgba(255,255,255,0.02)"
-                            : "rgba(0,0,0,0.02)",
-                        "&:hover": {
-                          backgroundColor:
-                            theme.palette.mode === "dark"
-                              ? "rgba(63, 81, 181, 0.16)"
-                              : "rgba(63, 81, 181, 0.06)",
-                          transform: "translateY(-1px)",
-                          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                          transition: "all 0.2s ease-in-out",
-                        },
-                        transition: "all 0.2s ease-in-out",
-                      }}
+                      sx={styles.tableRow(index)}
                     >
                       <TableCell>
                         <Box
                           sx={{ display: "flex", alignItems: "center", gap: 2 }}
                         >
-                          <Avatar
-                            sx={{
-                              bgcolor: u.blocked
-                                ? "grey.500"
-                                : "primary.main",
-                              width: 40,
-                              height: 40,
-                              fontSize: "1rem",
-                              fontWeight: 600,
-                            }}
-                          >
+                          <Avatar sx={styles.userAvatar(u.blocked)}>
                             {initials}
                           </Avatar>
                           <Box>
                             <Typography
                               variant="body1"
-                              sx={{ fontWeight: 600 }}
+                              sx={styles.userName}
                             >
                               {u.email}
                             </Typography>
@@ -548,7 +373,7 @@ export default function UsersList() {
                           size="small"
                           variant={chip.variant}
                           label={chip.label}
-                          sx={{ borderRadius: 1, fontWeight: 500 }}
+                          sx={styles.roleChip}
                         />
                       </TableCell>
 
@@ -562,11 +387,7 @@ export default function UsersList() {
                           size="small"
                           color={u.blocked ? "error" : "success"}
                           variant={u.blocked ? "filled" : "outlined"}
-                          sx={{
-                            borderRadius: 1,
-                            fontWeight: 600,
-                            minWidth: 70,
-                          }}
+                          sx={styles.statusChip(u.blocked)}
                         />
                       </TableCell>
 
@@ -582,14 +403,7 @@ export default function UsersList() {
                             component={RouterLink}
                             to={`/users/${u._id}`}
                             aria-label="Détails utilisateur"
-                            sx={{
-                              "&:hover": {
-                                backgroundColor: "primary.light",
-                                color: "white",
-                                transform: "scale(1.1)",
-                              },
-                              transition: "all 0.2s",
-                            }}
+                            sx={styles.actionButton("primary.light")}
                           >
                             <VisibilityIcon fontSize="small" />
                           </IconButton>
@@ -600,14 +414,7 @@ export default function UsersList() {
                             component={RouterLink}
                             to={`/users/${u._id}/edit`}
                             aria-label="Modifier utilisateur"
-                            sx={{
-                              "&:hover": {
-                                backgroundColor: "secondary.light",
-                                color: "white",
-                                transform: "scale(1.1)",
-                              },
-                              transition: "all 0.2s",
-                            }}
+                            sx={styles.actionButton("secondary.light")}
                           >
                             <EditIcon fontSize="small" />
                           </IconButton>
@@ -630,16 +437,7 @@ export default function UsersList() {
                                 );
                               }
                             }}
-                            sx={{
-                              "&:hover": {
-                                backgroundColor: u.blocked
-                                  ? "success.light"
-                                  : "error.light",
-                                color: "white",
-                                transform: "scale(1.1)",
-                              },
-                              transition: "all 0.2s",
-                            }}
+                            sx={styles.actionButton(u.blocked ? "success.light" : "error.light")}
                           >
                             {u.blocked ? (
                               <LockOpenIcon fontSize="small" />
@@ -653,14 +451,7 @@ export default function UsersList() {
                             color="error"
                             aria-label="Supprimer utilisateur"
                             onClick={() => openDeleteDialog(u)}
-                            sx={{
-                              "&:hover": {
-                                backgroundColor: "error.light",
-                                color: "white",
-                                transform: "scale(1.1)",
-                              },
-                              transition: "all 0.2s",
-                            }}
+                            sx={styles.actionButton("error.light")}
                           >
                             <DeleteIcon fontSize="small" />
                           </IconButton>
@@ -682,29 +473,17 @@ export default function UsersList() {
         aria-labelledby="delete-user-dialog-title"
         aria-describedby="delete-user-dialog-description"
         PaperProps={{
-          sx: {
-            borderRadius: 3,
-            boxShadow:
-              theme.palette.mode === "dark"
-                ? "0 25px 50px rgba(0,0,0,0.5)"
-                : "0 25px 50px rgba(0,0,0,0.25)",
-          },
+          sx: styles.dialogPaper,
         }}
       >
         <DialogTitle
           id="delete-user-dialog-title"
-          sx={{
-            bgcolor: "error.main",
-            color: "white",
-            display: "flex",
-            alignItems: "center",
-            gap: 2,
-          }}
+          sx={styles.dialogTitle}
         >
           <DeleteIcon />
           Confirmer la suppression
         </DialogTitle>
-        <DialogContent sx={{ mt: 2 }}>
+        <DialogContent sx={styles.dialogContent}>
           <DialogContentText id="delete-user-dialog-description">
             Êtes-vous sûr de vouloir supprimer l'utilisateur
             {" "}
@@ -715,11 +494,11 @@ export default function UsersList() {
             définitivement ce compte utilisateur.
           </DialogContentText>
         </DialogContent>
-        <DialogActions sx={{ p: 3, pt: 0 }}>
+        <DialogActions sx={styles.dialogActions}>
           <Button
             onClick={closeDeleteDialog}
             variant="outlined"
-            sx={{ borderRadius: 2, px: 3 }}
+            sx={styles.cancelButton}
           >
             Annuler
           </Button>
@@ -728,14 +507,7 @@ export default function UsersList() {
             variant="contained"
             color="error"
             startIcon={<DeleteIcon />}
-            sx={{
-              borderRadius: 2,
-              px: 3,
-              bgcolor: "error.main",
-              "&:hover": {
-                bgcolor: "error.dark",
-              },
-            }}
+            sx={styles.deleteButton}
           >
             Supprimer
           </Button>
