@@ -66,43 +66,53 @@ jobs:
   frontend-ci:
     name: Frontend CI
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./school-front
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
         with:
-          node-version: '24'
-          cache: 'npm'
-          cache-dependency-path: school-front/package-lock.json
+          context: ./school-front
+          file: ./school-front/Dockerfile
+          push: false
+          tags: school-front:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Run linter in container
+        run: |
+          docker run --rm school-front:ci npm run lint
 
-      - name: Run linter
-        run: npm run lint
+      - name: Run tests in container
+        run: |
+          docker run --rm \
+            -e VITE_API_URL=http://localhost:5000 \
+            school-front:ci npm test --if-present
 
-      - name: Run tests
-        run: npm test --if-present
-        env:
-          VITE_API_URL: http://localhost:5000
+      - name: Build application in container
+        run: |
+          docker run --rm \
+            -e VITE_API_URL=http://localhost:5000 \
+            -e VITE_GOOGLE_CLIENT_ID=test-client-id \
+            -v ${{ github.workspace }}/school-front/dist:/app/dist \
+            school-front:ci npm run build
 
-      - name: Build application
-        run: npm run build
-        env:
-          VITE_API_URL: http://localhost:5000
-          VITE_GOOGLE_CLIENT_ID: test-client-id
+      - name: Extract build artifacts from container
+        run: |
+          docker create --name extract school-front:ci
+          docker cp extract:/app/dist ./school-front/dist || echo "Build artifacts already extracted"
+          docker rm extract || true
 
       - name: Check build output
         run: |
           echo "Checking build artifacts..."
-          ls -la dist/
-          du -sh dist/
+          ls -la school-front/dist/ || echo "No dist folder found"
+          du -sh school-front/dist/ || echo "Cannot measure dist size"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -110,6 +120,7 @@ jobs:
           name: frontend-build
           path: school-front/dist
           retention-days: 7
+        if: always()
 
   # Summary Job
   ci-summary:
