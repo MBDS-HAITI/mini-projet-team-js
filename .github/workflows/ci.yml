@@ -80,6 +80,7 @@ jobs:
           context: ./school-front
           file: ./school-front/Dockerfile
           push: false
+          load: true
           tags: school-front:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
