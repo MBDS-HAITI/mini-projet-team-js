@@ -2,8 +2,11 @@
   "ExpandedNodes": [
     "",
     "\\school-backend",
-    "\\school-backend\\src"
+    "\\school-front",
+    "\\school-front\\src",
+    "\\school-front\\src\\pages",
+    "\\school-front\\src\\pages\\courses"
   ],
-  "SelectedNode": "\\school-backend\\src\\server.js",
+  "SelectedNode": "\\school-backend",
   "PreviewInSolutionExplorer": false
 }

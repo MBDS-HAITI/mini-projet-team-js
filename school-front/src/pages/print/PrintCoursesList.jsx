@@ -1,6 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  Box, Container, Divider, Table, TableBody, TableCell, TableHead, TableRow,
+  Box,
+  Container,
+  Divider,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
   Typography
 } from "@mui/material";
 import { api } from "../../api/http";
@@ -27,50 +34,123 @@ export default function PrintCoursesList() {
   return (
     <div className="print-root">
       <Box sx={{ bgcolor: "#fff", minHeight: "100vh" }}>
-        <PrintToolbar title="Aperçu - Liste des cours" backTo="/courses" />
+        <PrintToolbar
+          title="Aperçu - Liste des cours"
+          backTo="/courses"
+          className="no-print"
+        />
 
-        <Container maxWidth="md" sx={{ py: 4 }}>
-          <Typography textAlign={"center"} variant="h5" sx={{ fontWeight: 900, mb: 1 }}>
-            Liste des cours
-          </Typography>
-         
+        <Container maxWidth="lg" sx={{ py: 4 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "flex-start",
+              mb: 2
+            }}
+          >
+            <Box sx={{ textAlign: "center" }}>
+              <Typography
+                variant="h4"
+                sx={{ fontWeight: 800, mb: 1 }}
+              >
+                Liste des cours
+              </Typography>
+              <Typography
+                variant="h6"
+                color="text.secondary"
+                sx={{ mb: 1 }}
+              >
+                École Polytechnique - Gestion Scolaire
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Généré le {now} • {items.length} cours
+                {items.length !== 1 ? "s" : ""} au total
+              </Typography>
+            </Box>
+          </Box>
 
           <Divider sx={{ mb: 2 }} />
 
           {loading ? (
             <Typography>Chargement...</Typography>
           ) : (
-            <Table size="small">
+            <Table
+              size="small"
+              aria-label="courses-print-table"
+              sx={{ mt: 2 }}
+            >
               <TableHead>
-                <TableRow>
-                  <TableCell><b>Code</b></TableCell>
-                  <TableCell><b>Titre</b></TableCell>
-                  <TableCell><b>Crédit</b></TableCell>
-                  <TableCell><b>Niveau</b></TableCell>
-                  <TableCell><b>Filière</b></TableCell>
-                  <TableCell><b>Actif</b></TableCell>
-                  <TableCell><b>Description</b></TableCell>
+                <TableRow sx={{ bgcolor: "grey.100" }}>
+                  <TableCell sx={{ fontWeight: "bold", borderBottom: "2px solid #000" }}>
+                    Code
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: "bold", borderBottom: "2px solid #000" }}>
+                    Titre
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: "bold", borderBottom: "2px solid #000" }}>
+                    Crédit
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: "bold", borderBottom: "2px solid #000" }}>
+                    Niveau
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: "bold", borderBottom: "2px solid #000" }}>
+                    Filière
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: "bold", borderBottom: "2px solid #000" }}>
+                    Statut
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: "bold", borderBottom: "2px solid #000" }}>
+                    Description
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {items.map((c) => (
-                  <TableRow key={c._id}>
-                    <TableCell>{c.code}</TableCell>
-                    <TableCell>{c.titre}</TableCell>
+                  <TableRow
+                    key={c._id}
+                    sx={{ "&:nth-of-type(odd)": { bgcolor: "grey.50" } }}
+                  >
+                    <TableCell sx={{ fontFamily: "monospace", fontWeight: 500 }}>
+                      {c.code}
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 500 }}>{c.titre}</TableCell>
                     <TableCell>{c.credit ?? 0}</TableCell>
                     <TableCell>{c.niveau || "-"}</TableCell>
                     <TableCell>{c.filiere || "-"}</TableCell>
-                    <TableCell>{c.actif ? "Oui" : "Non"}</TableCell>
-                    <TableCell>{c.description || "-"}</TableCell>
+                    <TableCell>
+                      <Typography
+                        sx={{
+                          fontWeight: 500,
+                          color: c.actif ? "success.main" : "error.main"
+                        }}
+                      >
+                        {c.actif ? "Actif" : "Inactif"}
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={{ maxWidth: 280 }}>
+                      {c.description || "-"}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           )}
 
-          <Box sx={{ mt: 3 }}>
-            <Typography variant="body2" color="text.secondary">
-              {now}
+          <Box sx={{ mt: 4, pt: 2, borderTop: "1px solid #ccc" }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ textAlign: "center" }}
+            >
+              Document généré automatiquement par le système de gestion scolaire • {now}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ textAlign: "center", mt: 1 }}
+            >
+              École Polytechnique - Service Scolarité
             </Typography>
           </Box>
         </Container>

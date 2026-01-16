@@ -1,22 +1,33 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Box, Button, Card, CardContent, Chip, Container, Divider, Grid,
-  Skeleton, Stack, Typography
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  Container,
+  Divider,
+  Grid,
+  Skeleton,
+  Stack,
+  Typography,
 } from "@mui/material";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PrintIcon from "@mui/icons-material/Print";
 import EditIcon from "@mui/icons-material/Edit";
+import PersonIcon from "@mui/icons-material/Person";
+import SchoolIcon from "@mui/icons-material/School";
+import EventIcon from "@mui/icons-material/Event";
 
 import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 import { api } from "../../api/http";
-import EnrollmentForm from "./EnrollmentForm";
 
 const statutChip = (statut) => {
-  if (statut === "VALIDE") return { label: "Validé" };
-  if (statut === "EN_ATTENTE") return { label: "En attente" };
-  if (statut === "ANNULE") return { label: "Annulé" };
-  return { label: statut || "-" };
+  if (statut === "VALIDE") return { label: "Validé", color: "success" };
+  if (statut === "EN_ATTENTE") return { label: "En attente", color: "warning" };
+  if (statut === "ANNULE") return { label: "Annulé", color: "error" };
+  return { label: statut || "-", color: "default" };
 };
 
 export default function EnrollmentDetails() {
@@ -24,27 +35,15 @@ export default function EnrollmentDetails() {
   const navigate = useNavigate();
 
   const [en, setEn] = useState(null);
-  const [students, setStudents] = useState([]);
-  const [courses, setCourses] = useState([]);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  const [openForm, setOpenForm] = useState(false);
-  const [saving, setSaving] = useState(false);
 
   const load = async () => {
     setLoading(true);
     setError("");
     try {
-      const [res, st, co] = await Promise.all([
-        api.get(`/api/enrollments/${id}`),
-        api.get("/api/students"),
-        api.get("/api/courses")
-      ]);
+      const res = await api.get(`/api/enrollments/${id}`);
       setEn(res.data);
-      setStudents(st.data);
-      setCourses(co.data);
     } catch (e) {
       setError(e?.response?.data?.message || "Inscription introuvable");
       setEn(null);
@@ -55,21 +54,6 @@ export default function EnrollmentDetails() {
 
   useEffect(() => { load(); }, [id]);
 
-  const submitEdit = async (payload) => {
-    setSaving(true);
-    setError("");
-    try {
-      await api.put(`/api/enrollments/${id}`, payload);
-      setOpenForm(false);
-      await load();
-    } catch (e) {
-      setError(e?.response?.data?.message || "Erreur sauvegarde");
-      throw e;
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const s = en?.student || {};
   const c = en?.course || {};
   const studentLabel = s.matricule ? `${s.matricule} • ${s.prenom} ${s.nom}` : (en?.studentId || "-");
@@ -77,14 +61,39 @@ export default function EnrollmentDetails() {
   const chip = statutChip(en?.statut);
 
   return (
-    <Container maxWidth="lg" sx={{ py: 3 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-        <Typography variant="h5" sx={{ fontWeight: 900 }}>
-          Détails inscription
-        </Typography>
+    <Container maxWidth="md" sx={{ py: 4 }}>
+      {/* Top actions */}
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ mb: 3 }}
+      >
+        <Box>
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 900,
+              letterSpacing: 1,
+              background: "linear-gradient(45deg, #2196F3, #21CBF3)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            Détails de l'inscription
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            Visualisation complète des informations de l'inscription sélectionnée.
+          </Typography>
+        </Box>
 
-        <Stack direction="row" spacing={1}>
-          <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => navigate(-1)}>
+        <Stack direction="row" spacing={2}>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)}
+            sx={{ borderRadius: 2, fontWeight: 700 }}
+          >
             Retour
           </Button>
 
@@ -94,6 +103,7 @@ export default function EnrollmentDetails() {
             component={RouterLink}
             to={`/print/enrollments/${id}`}
             disabled={!en}
+            sx={{ borderRadius: 2, fontWeight: 700 }}
           >
             Imprimer / PDF
           </Button>
@@ -101,8 +111,10 @@ export default function EnrollmentDetails() {
           <Button
             variant="contained"
             startIcon={<EditIcon />}
-            onClick={() => setOpenForm(true)}
+            component={RouterLink}
+            to={`/enrollments/${id}/edit`}
             disabled={!en}
+            sx={{ borderRadius: 2, fontWeight: 700, boxShadow: 2 }}
           >
             Modifier
           </Button>
@@ -110,75 +122,178 @@ export default function EnrollmentDetails() {
       </Stack>
 
       {error && (
-        <Card sx={{ mb: 2, border: "1px solid", borderColor: "error.main" }}>
-          <CardContent><Typography color="error">{error}</Typography></CardContent>
+        <Card
+          sx={{
+            mb: 2,
+            border: "2px solid",
+            borderColor: "error.main",
+            boxShadow: 2,
+          }}
+        >
+          <CardContent>
+            <Typography color="error" sx={{ fontWeight: 700 }}>
+              {error}
+            </Typography>
+          </CardContent>
         </Card>
       )}
 
-      <Card variant="outlined" sx={{ borderRadius: 3 }}>
-        <CardContent sx={{ p: 3 }}>
+      {/* Content */}
+      <Card
+        variant="outlined"
+        sx={{
+          borderRadius: 4,
+          boxShadow: 4,
+          background:
+            "linear-gradient(135deg, #f5f7fa 0%, #e3f2fd 40%, #c3cfe2 100%)",
+        }}
+      >
+        <CardContent sx={{ p: 4 }}>
           {loading ? (
             <>
-              <Skeleton height={30} width="50%" />
-              <Skeleton height={22} width="30%" />
+              <Skeleton height={38} width="40%" sx={{ mb: 1 }} />
+              <Skeleton height={28} width="30%" sx={{ mb: 2 }} />
               <Divider sx={{ my: 2 }} />
               <Grid container spacing={2}>
                 {[...Array(6)].map((_, i) => (
                   <Grid item xs={12} sm={6} key={i}>
-                    <Skeleton height={24} />
+                    <Skeleton height={30} />
                   </Grid>
                 ))}
               </Grid>
             </>
           ) : !en ? (
-            <Typography>Inscription introuvable.</Typography>
+            <Typography sx={{ fontWeight: 700, color: "text.secondary" }}>
+              Inscription introuvable.
+            </Typography>
           ) : (
             <>
-              <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 2 }}>
+              {/* En-tête inscription */}
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="flex-start"
+                sx={{ mb: 3 }}
+              >
                 <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 900 }}>
-                    {studentLabel}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {courseLabel} • {en.anneeAcademique || "-"}
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                    sx={{ mb: 1 }}
+                  >
+                    <PersonIcon color="primary" />
+                    <Typography
+                      variant="h6"
+                      sx={{ fontWeight: 900, color: "primary.dark" }}
+                    >
+                      {studentLabel}
+                    </Typography>
+                  </Stack>
+
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <SchoolIcon color="secondary" />
+                    <Typography variant="body1" color="text.primary">
+                      {courseLabel}
+                    </Typography>
+                  </Stack>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mt: 0.5 }}
+                  >
+                    Année académique : {en.anneeAcademique || "-"}
                   </Typography>
                 </Box>
 
-                <Chip label={chip.label} variant="outlined" sx={{ fontWeight: 800 }} />
+                <Chip
+                  label={chip.label}
+                  color={chip.color}
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: 14,
+                    px: 2,
+                    py: 0.5,
+                    borderRadius: 2,
+                  }}
+                />
               </Stack>
 
               <Divider sx={{ my: 2 }} />
 
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <Typography><b>Année académique:</b> {en.anneeAcademique || "-"}</Typography>
+              {/* Détails structurés */}
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <Box
+                    sx={{
+                      p: 2,
+                      borderRadius: 2,
+                      backgroundColor: "rgba(255,255,255,0.9)",
+                      boxShadow: 1,
+                    }}
+                  >
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <EventIcon color="action" />
+                      <Typography
+                        variant="subtitle1"
+                        sx={{ fontWeight: 700 }}
+                      >
+                        Date d'inscription
+                      </Typography>
+                    </Stack>
+                    <Typography sx={{ mt: 0.5, color: "text.primary" }}>
+                      {en.dateInscription
+                        ? String(en.dateInscription).slice(0, 10)
+                        : "-"}
+                    </Typography>
+                  </Box>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography><b>Date inscription:</b> {en.dateInscription ? String(en.dateInscription).slice(0, 10) : "-"}</Typography>
+
+                <Grid item xs={12} md={6}>
+                  <Box
+                    sx={{
+                      p: 2,
+                      borderRadius: 2,
+                      backgroundColor: "rgba(255,255,255,0.9)",
+                      boxShadow: 1,
+                    }}
+                  >
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ fontWeight: 700 }}
+                    >
+                      Statut de l'inscription
+                    </Typography>
+                    <Typography sx={{ mt: 0.5, color: "text.primary" }}>
+                      {chip.label}
+                    </Typography>
+                  </Box>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography><b>Statut:</b> {chip.label}</Typography>
-                </Grid>
+
                 <Grid item xs={12}>
-                  <Typography variant="body2" color="text.secondary">
-                    ID: {en._id}
-                  </Typography>
+                  <Box
+                    sx={{
+                      mt: 1,
+                      p: 2,
+                      borderRadius: 2,
+                      backgroundColor: "rgba(255,255,255,0.9)",
+                      boxShadow: 1,
+                    }}
+                  >
+                    <Typography
+                      variant="subtitle2"
+                      color="text.secondary"
+                    >
+                      Identifiant de l'inscription : {en._id}
+                    </Typography>
+                  </Box>
                 </Grid>
               </Grid>
             </>
           )}
         </CardContent>
       </Card>
-
-      <EnrollmentForm
-        open={openForm}
-        onClose={() => !saving && setOpenForm(false)}
-        onSubmit={submitEdit}
-        saving={saving}
-        initialData={en}
-        students={students}
-        courses={courses}
-      />
     </Container>
   );
 }

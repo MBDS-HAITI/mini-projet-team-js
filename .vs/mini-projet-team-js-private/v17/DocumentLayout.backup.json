@@ -3,16 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\ismam\\OneDrive\\Documents\\MBDS\\WEB_REACT\\PROJET_PRIVATE\\mini-projet-team-js-private\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ismam\\OneDrive\\Documents\\MBDS\\WEB_REACT\\PROJET_PRIVATE\\mini-projet-team-js-private\\school-backend\\src\\server.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:school-backend\\src\\server.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ismam\\OneDrive\\Documents\\MBDS\\WEB_REACT\\PROJET_PRIVATE\\mini-projet-team-js-private\\school-backend\\src\\config\\passport.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:school-backend\\src\\config\\passport.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ismam\\OneDrive\\Documents\\MBDS\\WEB_REACT\\PROJET_PRIVATE\\mini-projet-team-js-private\\school-backend\\src\\config\\db.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:school-backend\\src\\config\\db.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ismam\\OneDrive\\Documents\\MBDS\\WEB_REACT\\PROJET_PRIVATE\\mini-projet-team-js-private\\school-backend\\src\\server.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:school-backend\\src\\server.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ismam\\OneDrive\\Documents\\MBDS\\WEB_REACT\\PROJET_PRIVATE\\mini-projet-team-js-private\\school-front\\src\\pages\\auth\\Login.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
@@ -58,7 +58,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 10,
           "Children": [
             {
               "$type": "Bookmark",
@@ -78,20 +78,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "passport.js",
               "DocumentMoniker": "C:\\Users\\ismam\\OneDrive\\Documents\\MBDS\\WEB_REACT\\PROJET_PRIVATE\\mini-projet-team-js-private\\school-backend\\src\\config\\passport.js",
               "RelativeDocumentMoniker": "school-backend\\src\\config\\passport.js",
               "ToolTip": "C:\\Users\\ismam\\OneDrive\\Documents\\MBDS\\WEB_REACT\\PROJET_PRIVATE\\mini-projet-team-js-private\\school-backend\\src\\config\\passport.js",
               "RelativeToolTip": "school-backend\\src\\config\\passport.js",
-              "ViewState": "AgIAADYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAD0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
               "WhenOpened": "2026-01-06T16:21:41.272Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "db.js",
               "DocumentMoniker": "C:\\Users\\ismam\\OneDrive\\Documents\\MBDS\\WEB_REACT\\PROJET_PRIVATE\\mini-projet-team-js-private\\school-backend\\src\\config\\db.js",
               "RelativeDocumentMoniker": "school-backend\\src\\config\\db.js",
@@ -99,8 +99,7 @@
               "RelativeToolTip": "school-backend\\src\\config\\db.js",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2026-01-06T16:21:32.477Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-06T16:21:32.477Z"
             },
             {
               "$type": "Document",
@@ -112,8 +111,7 @@
               "RelativeToolTip": "school-front\\src\\pages\\auth\\Login.jsx",
               "ViewState": "AgIAABUAAAAAAAAAAAAAACcAAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
-              "WhenOpened": "2026-01-05T22:44:55.692Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-05T22:44:55.692Z"
             },
             {
               "$type": "Document",
@@ -125,8 +123,7 @@
               "RelativeToolTip": "school-backend\\Dockerfile",
               "ViewState": "AgIAAAcAAAAAAAAAAAAuwBAAAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-01-06T02:13:59.37Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-06T02:13:59.37Z"
             },
             {
               "$type": "Document",
@@ -138,8 +135,7 @@
               "RelativeToolTip": "school-backend\\docker-entrypoint.sh",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAPAAAAAAAAAA==",
               "Icon": "00000000-0000-0000-0000-000000000000.000000|",
-              "WhenOpened": "2026-01-06T02:11:34.965Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-06T02:11:34.965Z"
             },
             {
               "$type": "Document",
@@ -151,18 +147,17 @@
               "RelativeToolTip": "docker-compose.yml",
               "ViewState": "AgIAAA8AAAAAAAAAAAAiwBsAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003775|",
-              "WhenOpened": "2026-01-06T01:50:52.726Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-06T01:50:52.726Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "server.js",
               "DocumentMoniker": "C:\\Users\\ismam\\OneDrive\\Documents\\MBDS\\WEB_REACT\\PROJET_PRIVATE\\mini-projet-team-js-private\\school-backend\\src\\server.js",
               "RelativeDocumentMoniker": "school-backend\\src\\server.js",
               "ToolTip": "C:\\Users\\ismam\\OneDrive\\Documents\\MBDS\\WEB_REACT\\PROJET_PRIVATE\\mini-projet-team-js-private\\school-backend\\src\\server.js",
               "RelativeToolTip": "school-backend\\src\\server.js",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEMAAAAnAAAAAAAAAA==",
+              "ViewState": "AgIAADAAAAAAAAAAAAAAADUAAAADAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
               "WhenOpened": "2026-01-06T01:37:02.826Z",
               "EditorCaption": ""
@@ -177,8 +172,7 @@
               "RelativeToolTip": "school-backend\\src\\routes\\auth.routes.js",
               "ViewState": "AgIAABcAAAAAAAAAAAAcwCUAAAADAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2026-01-06T00:58:23.834Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-06T00:58:23.834Z"
             },
             {
               "$type": "Document",
@@ -190,8 +184,7 @@
               "RelativeToolTip": "school-backend\\src\\routes\\users.routes.js",
               "ViewState": "AgIAACcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2026-01-06T00:57:27.051Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-06T00:57:27.051Z"
             },
             {
               "$type": "Document",
@@ -203,8 +196,7 @@
               "RelativeToolTip": "school-front\\src\\api\\http.js",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2026-01-05T23:43:03.355Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-05T23:43:03.355Z"
             },
             {
               "$type": "Document",
@@ -216,8 +208,7 @@
               "RelativeToolTip": "school-front\\src\\pages\\auth\\OAuthCallback.jsx",
               "ViewState": "AgIAABUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
-              "WhenOpened": "2026-01-05T23:12:17.344Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-05T23:12:17.344Z"
             },
             {
               "$type": "Document",
@@ -229,8 +220,7 @@
               "RelativeToolTip": "school-front\\src\\main.jsx",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
-              "WhenOpened": "2026-01-05T22:44:34.789Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-05T22:44:34.789Z"
             }
           ]
         }

@@ -19,22 +19,29 @@ import PrintStudentDetails from "./pages/print/PrintStudentDetails";
 
 import CoursesList from "./pages/courses/CoursesList";
 import CourseDetails from "./pages/courses/CourseDetails";
+import CourseCreate from "./pages/courses/CourseCreate";
+import CourseEdit from "./pages/courses/CourseEdit";
 import PrintCoursesList from "./pages/print/PrintCoursesList";
 import PrintCourseDetails from "./pages/print/PrintCourseDetails";
 import PrintStudentBulletin from "./pages/print/PrintStudentBulletin";
 
 import GradesList from "./pages/grades/GradesList";
 import GradeDetails from "./pages/grades/GradeDetails";
+import GradeCreate from "./pages/grades/GradeCreate";
+import GradeEdit from "./pages/grades/GradeEdit";
 import PrintGradesList from "./pages/print/PrintGradesList";
 import PrintGradeDetails from "./pages/print/PrintGradeDetails";
 
 import EnrollmentsList from "./pages/enrollments/EnrollmentsList";
 import EnrollmentDetails from "./pages/enrollments/EnrollmentDetails";
+import EnrollmentCreate from "./pages/enrollments/EnrollmentCreate";
+import EnrollmentEdit from "./pages/enrollments/EnrollmentEdit";
 import PrintEnrollmentsList from "./pages/print/PrintEnrollmentsList";
 import PrintEnrollmentDetails from "./pages/print/PrintEnrollmentDetails";
 
 import UsersList from "./pages/users/UsersList";
 import UserView from "./pages/users/UserView";
+import UserEdit from "./pages/users/UserEdit";
 import Profile from "./pages/profile/Profile";
 import PrintUsersList from "./pages/print/PrintUsersList";
 import PrintUserDetails from "./pages/print/PrintUserDetails";
@@ -179,22 +186,29 @@ export default function App() {
                 />
 
 <Route path="/courses" element={<ProtectedRoute roles={["ADMIN", "SCOLARITE"]}><CoursesList /></ProtectedRoute>} />
+<Route path="/courses/create" element={<ProtectedRoute roles={["ADMIN", "SCOLARITE"]}><CourseCreate /></ProtectedRoute>} />
 <Route path="/courses/:id" element={<ProtectedRoute roles={["ADMIN", "SCOLARITE"]}><CourseDetails /></ProtectedRoute>} />
+<Route path="/courses/:id/edit" element={<ProtectedRoute roles={["ADMIN", "SCOLARITE"]}><CourseEdit /></ProtectedRoute>} />
 <Route path="/print/courses" element={<ProtectedRoute roles={["ADMIN", "SCOLARITE"]}><PrintCoursesList /></ProtectedRoute>} />
 <Route path="/print/courses/:id" element={<ProtectedRoute roles={["ADMIN", "SCOLARITE"]}><PrintCourseDetails /></ProtectedRoute>} />
 
 <Route path="/grades" element={<ProtectedRoute roles={["ADMIN","SCOLARITE"]}><GradesList/></ProtectedRoute>} />
+<Route path="/grades/create" element={<ProtectedRoute roles={["ADMIN","SCOLARITE"]}><GradeCreate/></ProtectedRoute>} />
 <Route path="/grades/:id" element={<ProtectedRoute roles={["ADMIN","SCOLARITE"]}><GradeDetails/></ProtectedRoute>} />
+<Route path="/grades/:id/edit" element={<ProtectedRoute roles={["ADMIN","SCOLARITE"]}><GradeEdit/></ProtectedRoute>} />
 <Route path="/print/grades" element={<ProtectedRoute roles={["ADMIN","SCOLARITE"]}><PrintGradesList/></ProtectedRoute>} />
 <Route path="/print/grades/:id" element={<ProtectedRoute roles={["ADMIN","SCOLARITE"]}><PrintGradeDetails/></ProtectedRoute>} />
 
 <Route path="/enrollments" element={<ProtectedRoute roles={["ADMIN","SCOLARITE"]}><EnrollmentsList/></ProtectedRoute>} />
+<Route path="/enrollments/create" element={<ProtectedRoute roles={["ADMIN","SCOLARITE"]}><EnrollmentCreate/></ProtectedRoute>} />
 <Route path="/enrollments/:id" element={<ProtectedRoute roles={["ADMIN","SCOLARITE"]}><EnrollmentDetails/></ProtectedRoute>} />
+<Route path="/enrollments/:id/edit" element={<ProtectedRoute roles={["ADMIN","SCOLARITE"]}><EnrollmentEdit/></ProtectedRoute>} />
 <Route path="/print/enrollments" element={<ProtectedRoute roles={["ADMIN","SCOLARITE"]}><PrintEnrollmentsList/></ProtectedRoute>} />
 <Route path="/print/enrollments/:id" element={<ProtectedRoute roles={["ADMIN","SCOLARITE"]}><PrintEnrollmentDetails/></ProtectedRoute>} />
 
 <Route path="/users" element={<ProtectedRoute roles={["ADMIN"]}><UsersList/></ProtectedRoute>} />
 <Route path="/users/:id" element={<ProtectedRoute roles={["ADMIN"]}><UserView/></ProtectedRoute>} />
+<Route path="/users/:id/edit" element={<ProtectedRoute roles={["ADMIN"]}><UserEdit/></ProtectedRoute>} />
 
                 <Route path="/profile" element={<ProtectedRoute><Profile/></ProtectedRoute>} />
 <Route path="/print/users" element={<ProtectedRoute roles={["ADMIN"]}><PrintUsersList/></ProtectedRoute>} />
