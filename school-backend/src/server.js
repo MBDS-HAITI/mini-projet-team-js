@@ -7,6 +7,42 @@ const passport = require("passport");
 
 require("./config/passport");
 
+// Redis session store setup
+let RedisStore, redisClient;
+const useRedis = process.env.REDIS_URL && process.env.NODE_ENV !== "test";
+
+if (useRedis) {
+  RedisStore = require("connect-redis").default;
+  const { createClient } = require("redis");
+
+  redisClient = createClient({
+    url: process.env.REDIS_URL || "redis://localhost:6379",
+    socket: {
+      reconnectStrategy: (retries) => {
+        if (retries > 10) {
+          console.error("❌ Redis: Max reconnection attempts reached");
+          return new Error("Redis reconnection failed");
+        }
+        return Math.min(retries * 100, 3000);
+      }
+    }
+  });
+
+  redisClient.on("error", (err) => console.error("❌ Redis Client Error:", err));
+  redisClient.on("connect", () => console.log("✅ Redis connected"));
+  redisClient.on("reconnecting", () => console.log("🔄 Redis reconnecting..."));
+  redisClient.on("ready", () => console.log("✅ Redis ready"));
+
+  // Connect to Redis
+  (async () => {
+    try {
+      await redisClient.connect();
+    } catch (err) {
+      console.error("❌ Failed to connect to Redis:", err);
+    }
+  })();
+}
+
 const adminUsersRoutes = require("./routes/admin.users.routes");
 
 const authRoutes = require("./routes/auth.routes");
@@ -23,13 +59,32 @@ const app = express();
 app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
 app.use(express.json());
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false
-  })
-);
+// Session configuration with Redis support
+const sessionConfig = {
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === "production", // HTTPS only in production
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+  }
+};
+
+// Use Redis store if available, otherwise fall back to MemoryStore
+if (useRedis && redisClient) {
+  sessionConfig.store = new RedisStore({
+    client: redisClient,
+    prefix: "school-session:",
+    ttl: 60 * 60 * 24 * 7 // 7 days in seconds
+  });
+  console.log("✅ Using Redis session store");
+} else {
+  console.log("⚠️  Using in-memory session store (not recommended for production)");
+}
+
+app.use(session(sessionConfig));
 
 app.use(passport.initialize());
 

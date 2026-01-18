@@ -1,0 +1,140 @@
+name: CD - Render Backend Only
+
+# Simplified CD workflow using only Render Deploy Hooks
+# Vercel auto-deploys on git push, so this only handles backend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'school-backend/**'
+      - '.github/workflows/cd-render-only.yml'
+  workflow_dispatch:
+
+jobs:
+  # Wait for CI to pass
+  check-ci:
+    name: Check CI Status
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Wait for CI to complete
+        uses: lewagon/wait-on-check-action@v1.3.1
+        with:
+          ref: ${{ github.sha }}
+          check-name: 'CI Summary'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+
+  # Build and push Docker image
+  build-and-push:
+    name: Build & Push Docker Image
+    needs: check-ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/mbds_student_management_backend
+          tags: |
+            type=sha,prefix={{branch}}-
+            type=ref,event=branch
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./school-backend
+          file: ./school-backend/Dockerfile.production
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Deploy to Render
+  deploy-backend:
+    name: Deploy to Render
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Render Deploy Hook
+        run: |
+          echo "🚀 Triggering Render deployment..."
+          echo "📦 Docker image: ${{ needs.build-and-push.outputs.image-tag }}"
+          response=$(curl -X POST -s -o /dev/null -w "%{http_code}" "${{ secrets.RENDER_DEPLOY_HOOK_URL }}")
+          
+          if [ "$response" -eq 200 ] || [ "$response" -eq 201 ]; then
+            echo "✅ Deploy hook triggered successfully (HTTP $response)"
+          else
+            echo "❌ Deploy hook failed with HTTP $response"
+            exit 1
+          fi
+
+      - name: Wait for deployment
+        run: |
+          echo "⏳ Waiting for Render to build and deploy (90 seconds)..."
+          sleep 90
+
+      - name: Health check
+        run: |
+          backend_url="${{ vars.BACKEND_URL || 'https://school-backend.onrender.com' }}"
+          echo "🏥 Checking backend health at $backend_url/health"
+          
+          max_attempts=12
+          attempt=0
+          
+          while [ $attempt -lt $max_attempts ]; do
+            http_code=$(curl -s -o /dev/null -w "%{http_code}" "$backend_url/health")
+            
+            if [ "$http_code" -eq 200 ]; then
+              response=$(curl -s "$backend_url/health")
+              echo "✅ Backend is healthy! Response: $response"
+              exit 0
+            fi
+            
+            attempt=$((attempt + 1))
+            echo "⏳ Attempt $attempt/$max_attempts: HTTP $http_code - Retrying in 10s..."
+            sleep 10
+          done
+          
+          echo "❌ Health check failed after $max_attempts attempts"
+          exit 1
+
+      - name: Deployment summary
+        if: always()
+        run: |
+          backend_url="${{ vars.BACKEND_URL || 'https://school-backend.onrender.com' }}"
+          
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "🎉 Backend deployed successfully!"
+            echo "📍 URL: $backend_url"
+            echo "🏥 Health: $backend_url/health"
+          else
+            echo "❌ Backend deployment failed"
+            echo "Check Render logs: https://dashboard.render.com"
+          fi

@@ -1,0 +1,46 @@
+# Multi-stage build for production deployment
+# Stage 1: Dependencies
+FROM node:24-alpine AS dependencies
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install production dependencies only using lockfile
+RUN npm ci --only=production --ignore-scripts
+
+# Stage 2: Production image
+FROM node:24-alpine AS production
+
+WORKDIR /app
+
+# Set environment to production
+ENV NODE_ENV=production
+
+# Copy package files for reference
+COPY package*.json ./
+
+# Copy production dependencies from previous stage
+COPY --from=dependencies /app/node_modules ./node_modules
+
+# Copy application source code
+COPY src ./src
+
+# Create a non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 && \
+    chown -R nodejs:nodejs /app
+
+# Switch to non-root user
+USER nodejs
+
+# Expose application port
+EXPOSE 7010
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:7010/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+
+# Start the application directly (no seed script)
+CMD ["node", "src/server.js"]

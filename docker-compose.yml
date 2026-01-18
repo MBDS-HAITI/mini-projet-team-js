@@ -9,12 +9,14 @@ services:
     environment:
       - MONGODB_URI=mongodb://mongo:27017/school_db
       - PORT=7010
+      - REDIS_URL=redis://redis:6379
     env_file:
       - ./school-backend/.env
     ports:
       - "7010:7010"
     depends_on:
       - mongo
+      - redis
   school-front:
     build:
       context: ./school-front
@@ -35,5 +37,14 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
 volumes:
   mongo-data:
+  redis-data:
