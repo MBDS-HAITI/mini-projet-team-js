@@ -23,11 +23,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Wait for CI to complete
+      - name: Wait for Backend CI
         uses: lewagon/wait-on-check-action@v1.3.1
         with:
           ref: ${{ github.sha }}
-          check-name: 'CI Summary'
+          check-name: 'Backend CI'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+      
+      - name: Wait for Frontend CI
+        uses: lewagon/wait-on-check-action@v1.3.1
+        with:
+          ref: ${{ github.sha }}
+          check-name: 'Frontend CI'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
 
