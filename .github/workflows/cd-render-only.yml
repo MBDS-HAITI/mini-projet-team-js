@@ -113,7 +113,7 @@ jobs:
 
       - name: Health check
         run: |
-          backend_url="${{ vars.BACKEND_URL || 'https://school-backend.onrender.com' }}"
+          backend_url="${{ vars.BACKEND_URL || 'https://mbds-student-management-backend-main.onrender.com' }}"
           echo "🏥 Checking backend health at $backend_url/health"
           
           max_attempts=12
@@ -139,7 +139,7 @@ jobs:
       - name: Deployment summary
         if: always()
         run: |
-          backend_url="${{ vars.BACKEND_URL || 'https://school-backend.onrender.com' }}"
+          backend_url="${{ vars.BACKEND_URL || 'https://mbds-student-management-backend-main.onrender.com' }}"
           
           if [ "${{ job.status }}" == "success" ]; then
             echo "🎉 Backend deployed successfully!"
