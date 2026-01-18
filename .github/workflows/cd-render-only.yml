@@ -16,6 +16,9 @@ jobs:
   check-ci:
     name: Check CI Status
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
