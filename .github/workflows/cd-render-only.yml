@@ -96,7 +96,6 @@ jobs:
       - name: Trigger Render Deploy Hook
         run: |
           echo "🚀 Triggering Render deployment..."
-          echo "📦 Docker image: ${{ needs.build-and-push.outputs.image-tag }}"
           response=$(curl -X POST -s -o /dev/null -w "%{http_code}" "${{ secrets.RENDER_DEPLOY_HOOK_URL }}")
           
           if [ "$response" -eq 200 ] || [ "$response" -eq 201 ]; then
