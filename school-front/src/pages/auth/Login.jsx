@@ -7,8 +7,8 @@ import { useNavigate, Navigate } from "react-router-dom";
 export default function Login() {
   const { login, user } = useContext(AuthContext);
   const nav = useNavigate();
-  const [email, setEmail] = useState("admin@mail.com");
-  const [password, setPassword] = useState("Admin@123");
+  const [email, setEmail] = useState("admin@school.com");
+  const [password, setPassword] = useState("1234");
   const [error, setError] = useState("");
 
   if (user) return <Navigate to="/" replace />;  // prevent logged-in users from seeing login
@@ -345,6 +345,42 @@ export default function Login() {
               >
                 Facebook
               </Button>
+            </Box>
+
+            <Box
+              sx={{
+                mt: 3,
+                p: 2,
+                borderRadius: 2,
+                bgcolor: 'rgba(102, 126, 234, 0.05)',
+                border: '1px dashed rgba(102, 126, 234, 0.3)',
+              }}
+            >
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 600,
+                  color: 'text.primary',
+                  mb: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                }}
+              >
+                🔑 Comptes de démonstration (mot de passe: 1234)
+              </Typography>
+              <Typography variant="caption" sx={{ display: 'block', color: 'text.secondary', mb: 0.5 }}>
+                • admin@school.com (ADMIN)
+              </Typography>
+              <Typography variant="caption" sx={{ display: 'block', color: 'text.secondary', mb: 0.5 }}>
+                • scolarite@school.com (SCOLARITÉ)
+              </Typography>
+              <Typography variant="caption" sx={{ display: 'block', color: 'text.secondary', mb: 0.5 }}>
+                • jean.pierre@student.com (ÉTUDIANT)
+              </Typography>
+              <Typography variant="caption" sx={{ display: 'block', color: 'text.secondary' }}>
+                • marie.louis@student.com (ÉTUDIANT)
+              </Typography>
             </Box>
           </Box>
         </Paper>
