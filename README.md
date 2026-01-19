@@ -4,6 +4,12 @@
 
 A comprehensive school management system built with Node.js, Express, MongoDB, React, and Material-UI.
 
+## 🚀 Live Demo
+
+- **Frontend**: [https://main.d3w0bfgl6938wl.amplifyapp.com/](https://main.d3w0bfgl6938wl.amplifyapp.com/)
+- **Backend API**: [https://mbds-student-management-backend-main.onrender.com/](https://mbds-student-management-backend-main.onrender.com/)
+- **API Health Check**: [https://mbds-student-management-backend-main.onrender.com/health](https://mbds-student-management-backend-main.onrender.com/health)
+
 ## Features
 
 - 👥 **Student Management** - Manage student profiles, enrollment, and academic records
