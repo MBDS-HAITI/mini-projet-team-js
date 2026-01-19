@@ -92,13 +92,14 @@ FRONTEND_URL=http://localhost:5173
 VITE_API_URL=http://localhost:7010
 ```
 
-### Default Test Accounts
+### Demo Accounts
 
-After seeding the database:
+Try the live demo with these test accounts (password: `1234`):
 
-- **Admin**: admin@mail.com / Admin@123
-- **Scolarité**: scolarite@mail.com / Scolarite@123
-- **Student**: student@mail.com / Student@123
+- **Admin**: admin@school.com
+- **Scolarité**: scolarite@school.com
+- **Student**: jean.pierre@student.com
+- **Student**: marie.louis@student.com
 
 ## Development
 
